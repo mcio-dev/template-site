@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+<html lang="zh">
+<head>
+	<title>Bukkit 项目生成器 (Gradle) - Minecraft I/O Developers</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="assets/css/main.css" />
+	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.15.4/css/all.min.css" />
+	<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+</head>
+<body class="is-preload">
+	<!-- Wrapper -->
+	<div id="wrapper">
+
+	<section class="wrapper style1 fade-up">
+		<div class="inner">
+			<h1>Bukkit 项目生成器 (未完成)</h1>
+			<div class="bottom-07em">
+				<p>使用图形化向导，快速生成基于 <a href="https://github.com/MrXiaoM/PluginBase" target="_blank">MrXiaoM/PluginBase</a> 的 Gradle 项目。PluginBase 致力于服务端插件的多 Minecraft 版本兼容。</p>
+				<p>该站点<b>不支持</b>大部分移动端浏览器，请使用桌面端 Chrome、Edge、FireFox 等浏览器。</p>
+			</div>
+			<div class="split style1 bottom-07em">
+				<section>
+					<h2>Step 1. 插件属性</h2>
+					<div class="fields bottom-07em">
+						<div class="field half">
+							<label for="plugin-name">插件名</label>
+							<input type="text" name="plugin-name" id="plugin-name" value="ExamplePlugin" placeholder="插件名" />
+							<label for="plugin-package">代码包名</label>
+							<input type="text" name="plugin-package" id="plugin-package" value="top.mrxiaom.example" placeholder="代码包名" />
+							<label for="plugin-api-version">API 版本</label>
+							<input type="text" name="plugin-api-version" id="plugin-api-version" value="1.13" placeholder="API 版本" />
+						</div>
+						<div class="field half">
+							<label for="plugin-version">插件版本</label>
+							<input type="text" name="plugin-version" id="plugin-version" value="1.0.0" placeholder="插件名" />
+							<label for="plugin-mainclass">主类名</label>
+							<input type="text" name="plugin-mainclass" id="plugin-mainclass" value="ExamplePlugin" placeholder="主类名" />
+							<label for="plugin-authors">作者列表 (逗号分隔)</label>
+							<input type="text" name="plugin-authors" id="plugin-authors" value="MrXiaoM" placeholder="作者列表" />
+						</div>
+					</div>
+					<div class="fields bottom-07em">
+						<div class="field half">
+							<ul class="air">
+								<li>
+									<input type="checkbox" id="plugin-settings-bungeecord" name="plugin-settings-bungeecord">
+									<label for="plugin-settings-bungeecord">BungeeCord 插件频道支持</label>
+								</li>
+								<li>
+									<input type="checkbox" id="plugin-settings-database" name="plugin-settings-database">
+									<label for="plugin-settings-database">MySQL/SQLite 数据库支持</label>
+								</li>
+								<li>
+									<input type="checkbox" id="plugin-settings-ignore" name="plugin-settings-ignore">
+									<label for="plugin-settings-ignore">自动注册时忽略 shadow 目标</label>
+								</li>
+							</ul>
+						</div>
+						<div class="field half">
+							<ul class="air">
+								<li>
+									<input type="checkbox" id="plugin-settings-vault" name="plugin-settings-vault">
+									<label for="plugin-settings-vault">Vault 经济支持</label>
+								</li>
+								<li>
+									<input type="checkbox" id="plugin-settings-db-reload" name="plugin-settings-db-reload">
+									<label for="plugin-settings-db-reload">重载配置时重连数据库</label>
+								</li>
+							</ul>
+						</div>
+					</div>
+					
+					<h2>Step 3. 注册命令 (可选)</h2>
+					<div class="fields bottom-0">
+						<div class="field half">
+							<input type="checkbox" id="command-register" name="command-register" checked>
+							<label for="command-register"><b>注册命令名</b></label>
+							<input type="text" name="command-name" id="command-name" value="example" placeholder="命令名" />
+						</div>
+						<div class="field half">
+							<input type="checkbox" id="command-alias-enable" name="command-alias-enable">
+							<label for="command-alias-enable"><b>命令别名 (逗号分隔)</b></label>
+							<input type="text" name="command-alias" id="command-alias" value="e" placeholder="命令别名" />
+						</div>
+					</div>
+					<div class="field">
+						<label for="command-description">命令描述</label>
+						<input type="text" name="command-description" id="command-description" value="The main command of ExmaplePlugin" placeholder="命令描述" />
+					</div>
+				</section>
+				<section>
+					<h2>Step 2. 使用依赖</h2>
+					<div class="fields bottom-07em">
+						<div class="field">
+							<label for="depend-minecraft">游戏版本</label>
+							<input type="text" name="depend-minecraft" id="depend-minecraft" value="1.20" placeholder="游戏版本" />
+							<input type="checkbox" id="depend-paper" name="depend-paper">
+							<label for="depend-paper">使用 Paper API (对 Spigot 兼容性稍差)</label>
+							<label for="depend-shadow-target">shadow 打包目标包</label>
+							<input type="text" name="depend-shadow-target" id="depend-shadow-target" value="top.mrxiaom.example.libs" placeholder="shadow 打包目标包" />
+							
+							<ul class="air">
+								<li>
+									<input type="checkbox" id="depend-adventure" name="depend-adventure" checked>
+									<label for="depend-adventure">Adventure 富文本支持库</label>
+								</li>
+								<li>
+									<input type="checkbox" id="depend-nbtapi" name="depend-nbtapi" checked>
+									<label for="depend-nbtapi">item-nbt-api 全版本NBT支持库</label>
+								</li>
+								<li>
+									<input type="checkbox" id="depend-hikaricp" name="depend-hikaricp" checked>
+									<label for="depend-hikaricp">HikariCP 数据库连接池</label>
+								</li>
+							</ul>
+						</div>
+					</div>
+					
+					<h2>Step 4. 额外依赖插件 (可选)</h2>
+					<div class="fields bottom-07em">
+						<div class="field half">
+							<input type="checkbox" id="other-mythic" name="other-mythic">
+							<label for="other-mythic">MythicMobs 4 + 5</label>
+						</div>
+						<div class="field half">
+							<input type="checkbox" id="other-playerpoints" name="other-playerpoints">
+							<label for="other-playerpoints">PlayerPoints</label>
+						</div>
+					</div>
+
+					<h2>Step 5. 开始开发</h2>
+					<button id="$start" class="button primary"><i class="fa fa-file-download"></i> <span id="$startText">生成并下载项目</span></button>
+				</section>
+			</div>
+		</div>
+	</section>
+
+	</div>
+
+	<footer id="footer" class="wrapper style1-alt">
+		<div class="inner">
+			<ul class="menu">
+				<li>&copy; <a href="https://www.mrxiaom.top/" target="_blank">MrXiaoM</a> 保留所有权利.</li><li>该网页由 <a href="http://html5up.net"  target="_blank">HTML5 UP</a> 设计</li>
+			</ul>
+		</div>
+	</footer>
+
+	<script src="https://unpkg.com/jquery@3.6.0/dist/jquery.min.js"></script>
+	<script src="https://unpkg.com/jquery.scrollex@0.2.1/jquery.scrollex.min.js"></script>
+	<script src="https://unpkg.com/web-streams-polyfill@2.0.2/dist/polyfill.min.js"></script>
+	<script src="assets/js/StreamSaver.min.js"></script>
+	<script src="assets/js/zip-stream.js"></script>
+	<script src="assets/js/jquery.scrolly.min.js"></script>
+	<script src="assets/js/browser.min.js"></script>
+	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="assets/js/util.js"></script>
+	<script src="assets/js/main.js"></script>
+
+</body>
+</html>

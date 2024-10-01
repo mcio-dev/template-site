@@ -62,6 +62,25 @@ const $other = {
 	playerPoints: $v("#other-playerpoints"),
 }
 
+function updateCommandState() {
+	const enable = $command.register.value()
+	const alias = $command.aliasEnable.value()
+	console.log('enable: ' + enable + ', alias: ' + alias)
+	if (!enable) {
+		$command.name.prop('disabled', true)
+		$command.aliasEnable.prop('disabled', true)
+		$command.alias.prop('disabled', true)
+		$command.description.prop('disabled', true)
+	} else {
+		$command.name.prop('disabled', false)
+		$command.aliasEnable.prop('disabled', false)
+		$command.alias.prop('disabled', !alias)
+		$command.description.prop('disabled', false)
+	}
+}
+$command.register.change(updateCommandState);
+$command.aliasEnable.change(updateCommandState);
+
 function generateCode(plains) {
 	const push = function(name, content) {
 		plains.push({ name: name, content: content });
@@ -322,6 +341,7 @@ public class ${mainClass} extends BukkitPlugin {
     public ${mainClass}() {
         super(options()
                 .bungee(${$plugin.settings.bungeecord.value()})
+                .adventure(${$depend.adventure.value()})
                 .database(${$plugin.settings.database.value()})
                 .reconnectDatabaseWhenReloadConfig(${$plugin.settings.dbReload.value()})
                 .vaultEconomy(${$plugin.settings.vault.value()})`

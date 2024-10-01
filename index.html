@@ -52,7 +52,7 @@
 									<label for="plugin-settings-database">MySQL/SQLite 数据库支持</label>
 								</li>
 								<li>
-									<input type="checkbox" id="plugin-settings-ignore" name="plugin-settings-ignore">
+									<input type="checkbox" id="plugin-settings-ignore" name="plugin-settings-ignore" checked>
 									<label for="plugin-settings-ignore">自动注册时忽略 shadow 目标</label>
 								</li>
 							</ul>
@@ -81,7 +81,7 @@
 						<div class="field half">
 							<input type="checkbox" id="command-alias-enable" name="command-alias-enable">
 							<label for="command-alias-enable"><b>命令别名 (逗号分隔)</b></label>
-							<input type="text" name="command-alias" id="command-alias" value="e" placeholder="命令别名" />
+							<input type="text" name="command-alias" id="command-alias" value="e" placeholder="命令别名" disabled />
 						</div>
 					</div>
 					<div class="field">
@@ -102,15 +102,15 @@
 							
 							<ul class="air">
 								<li>
-									<input type="checkbox" id="depend-adventure" name="depend-adventure" checked>
+									<input type="checkbox" id="depend-adventure" name="depend-adventure">
 									<label for="depend-adventure">Adventure 富文本支持库</label>
 								</li>
 								<li>
-									<input type="checkbox" id="depend-nbtapi" name="depend-nbtapi" checked>
+									<input type="checkbox" id="depend-nbtapi" name="depend-nbtapi">
 									<label for="depend-nbtapi">item-nbt-api 全版本NBT支持库</label>
 								</li>
 								<li>
-									<input type="checkbox" id="depend-hikaricp" name="depend-hikaricp" checked>
+									<input type="checkbox" id="depend-hikaricp" name="depend-hikaricp">
 									<label for="depend-hikaricp">HikariCP 数据库连接池</label>
 								</li>
 							</ul>

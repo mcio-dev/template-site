@@ -71,7 +71,7 @@
 						</div>
 					</div>
 					
-					<h2>Step 3. 注册命令 (可选)</h2>
+					<h2>Step 2. 注册命令 (可选)</h2>
 					<div class="fields bottom-0">
 						<div class="field half">
 							<input type="checkbox" id="command-register" name="command-register" checked>
@@ -90,7 +90,7 @@
 					</div>
 				</section>
 				<section>
-					<h2>Step 2. 使用依赖</h2>
+					<h2>Step 3. 使用依赖</h2>
 					<div class="fields bottom-07em">
 						<div class="field">
 							<label for="depend-minecraft">游戏版本</label>
@@ -130,7 +130,10 @@
 					</div>
 
 					<h2>Step 5. 开始开发</h2>
-						<button id="$start" class="button primary bottom-07em"><i class="fa fa-file-download"></i> <span id="$startText">生成并下载项目</span></button>
+						<ul class="actions bottom-07em">
+							<li><button id="$start" class="button primary"><i class="fa fa-file-download"></i> <span id="$startText">生成并下载项目</span></button></li>
+							<li><a href="https://github.com/MrXiaoM/PluginBase/tree/main/docs" target="_blank" class="button"><i class="fa fa-map-marked-alt"></i> 查阅文档</a></li>
+						</ul>
 						<p>
 							注意: 请在「项目结构」将 SDK 版本设为 <code>Java 17</code>，在「设置」->「构建工具」->「Gradle」将「Gradle JVM」设为 <code>项目SDK</code>。<br>
 							要这么做是因为部分依赖的引用要求 Java 17，别担心，编译后是支持到 Java 8 的。

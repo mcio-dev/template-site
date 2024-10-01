@@ -14,7 +14,7 @@
 
 	<section class="wrapper style1 fade-up">
 		<div class="inner">
-			<h1>Bukkit 项目生成器 (未完成)</h1>
+			<h1>Bukkit 项目生成器</h1>
 			<div class="bottom-07em">
 				<p>使用图形化向导，快速生成基于 <a href="https://github.com/MrXiaoM/PluginBase" target="_blank">MrXiaoM/PluginBase</a> 的 Gradle 项目。PluginBase 致力于服务端插件的多 Minecraft 版本兼容。</p>
 				<p>该站点<b>不支持</b>大部分移动端浏览器，请使用桌面端 Chrome、Edge、FireFox 等浏览器。</p>
@@ -130,7 +130,11 @@
 					</div>
 
 					<h2>Step 5. 开始开发</h2>
-					<button id="$start" class="button primary"><i class="fa fa-file-download"></i> <span id="$startText">生成并下载项目</span></button>
+						<button id="$start" class="button primary bottom-07em"><i class="fa fa-file-download"></i> <span id="$startText">生成并下载项目</span></button>
+						<p>
+							注意: 请在「项目结构」将 SDK 版本设为 <code>Java 17</code>，在「设置」->「构建工具」->「Gradle」将「Gradle JVM」设为 <code>项目SDK</code>。<br>
+							要这么做是因为部分依赖的引用要求 Java 17，别担心，编译后是支持到 Java 8 的。
+						</p>
 				</section>
 			</div>
 		</div>

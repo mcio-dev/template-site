@@ -346,7 +346,7 @@ public class ${mainClass} extends BukkitPlugin {
                 .reconnectDatabaseWhenReloadConfig(${$plugin.settings.dbReload.value()})
                 .vaultEconomy(${$plugin.settings.vault.value()})`
  + ($plugin.settings.ignore.value() ? `
-                .scanIgnore("${$depend.shadowTarget}")` : ''
+                .scanIgnore("${$depend.shadowTarget.value()}")` : ''
 ) + `
         );
     }`

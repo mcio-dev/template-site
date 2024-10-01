@@ -464,7 +464,6 @@ $start.onclick = async () => {
 	$startText.innerHTML = "正在生成项目"
 	try {
 		const pluginName = $plugin.name.value()
-		const pluginVersion = $plugin.version.value()
 		let remotes = [
 			{ name: "gradle/wrapper/gradle-wrapper.jar", url: "https://bukkit.mcio.dev/assets/project/gradle/wrapper/gradle-wrapper.jar"  },
 			{ name: "gradlew", url: "https://bukkit.mcio.dev/assets/project/gradlew" },
@@ -475,7 +474,7 @@ $start.onclick = async () => {
 
 		generateCode(plains)
 
-		const fileStream = streamSaver.createWriteStream(pluginName + '-' + pluginVersion + '.zip')
+		const fileStream = streamSaver.createWriteStream(pluginName + '.zip')
 		const readableZipStream = new ZIP({
 			start(ctrl) { },
 			async pull(ctrl) {

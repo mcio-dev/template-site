@@ -1,91 +1,91 @@
 (function ($) {
-	var $window = $(window),
-		$body = $('body');
-	breakpoints({
-		xlarge: ['1281px', '1680px'],
-		large: ['981px', '1280px'],
-		medium: ['737px', '980px'],
-		small: ['481px', '736px'],
-		xsmall: [null, '480px']
-	});
-	if (browser.name == 'ie') $body.addClass('is-ie');
-	$window.on('load', function () {
-		window.setTimeout(function () { $body.removeClass('is-preload'); }, 100);
-	});
+    var $window = $(window),
+        $body = $('body');
+    breakpoints({
+        xlarge: ['1281px', '1680px'],
+        large: ['981px', '1280px'],
+        medium: ['737px', '980px'],
+        small: ['481px', '736px'],
+        xsmall: [null, '480px']
+    });
+    if (browser.name == 'ie') $body.addClass('is-ie');
+    $window.on('load', function () {
+        window.setTimeout(function () { $body.removeClass('is-preload'); }, 100);
+    });
 })(jQuery);
 
 streamSaver.mitm = "https://bukkit.mcio.dev/assets/res/mitm.html?version=2.0.0"
 
 function $v(selector) {
-	const element = $(selector)
-	element.value = function () {
-		if (element.attr("type") == "checkbox") {
-			return element[0].checked
-		} else {
-			return element.val()
-		}
-	}
-	return element
+    const element = $(selector)
+    element.value = function () {
+        if (element.attr("type") == "checkbox") {
+            return element[0].checked
+        } else {
+            return element.val()
+        }
+    }
+    return element
 }
 const $plugin = {
-	name: $v("#plugin-name"),
-	version: $v("#plugin-version"),
-	package: $v("#plugin-package"),
-	mainClass: $v("#plugin-mainclass"),
-	apiVersion: $v("#plugin-api-version"),
-	authors: $v("#plugin-authors"),
-	settings: {
-		bungeecord: $v("#plugin-settings-bungeecord"),
-		vault: $v("#plugin-settings-vault"),
-		database: $v("#plugin-settings-database"),
-		dbReload: $v("#plugin-settings-db-reload"),
-		ignore: $v("#plugin-settings-ignore"),
-	},
+    name: $v("#plugin-name"),
+    version: $v("#plugin-version"),
+    package: $v("#plugin-package"),
+    mainClass: $v("#plugin-mainclass"),
+    apiVersion: $v("#plugin-api-version"),
+    authors: $v("#plugin-authors"),
+    settings: {
+        bungeecord: $v("#plugin-settings-bungeecord"),
+        vault: $v("#plugin-settings-vault"),
+        database: $v("#plugin-settings-database"),
+        dbReload: $v("#plugin-settings-db-reload"),
+        ignore: $v("#plugin-settings-ignore"),
+    },
 }
 const $command = {
-	register: $v("#command-register"),
-	name: $v("#command-name"),
-	aliasEnable: $v("#command-alias-enable"),
-	alias: $v("#command-alias"),
-	description: $v("#command-description"),
+    register: $v("#command-register"),
+    name: $v("#command-name"),
+    aliasEnable: $v("#command-alias-enable"),
+    alias: $v("#command-alias"),
+    description: $v("#command-description"),
 }
 const $depend = {
-	minecraft: $v("#depend-minecraft"),
-	paper: $v("#depend-paper"),
-	shadowTarget: $v("#depend-shadow-target"),
-	adventure: $v("#depend-adventure"),
-	nbtapi: $v("#depend-nbtapi"),
-	hikariCP: $v("#depend-hikaricp"),
+    minecraft: $v("#depend-minecraft"),
+    paper: $v("#depend-paper"),
+    shadowTarget: $v("#depend-shadow-target"),
+    adventure: $v("#depend-adventure"),
+    nbtapi: $v("#depend-nbtapi"),
+    hikariCP: $v("#depend-hikaricp"),
 }
 const $other = {
-	mythic: $v("#other-mythic"),
-	playerPoints: $v("#other-playerpoints"),
+    mythic: $v("#other-mythic"),
+    playerPoints: $v("#other-playerpoints"),
 }
 
 function updateCommandState() {
-	const enable = $command.register.value()
-	const alias = $command.aliasEnable.value()
-	console.log('enable: ' + enable + ', alias: ' + alias)
-	if (!enable) {
-		$command.name.prop('disabled', true)
-		$command.aliasEnable.prop('disabled', true)
-		$command.alias.prop('disabled', true)
-		$command.description.prop('disabled', true)
-	} else {
-		$command.name.prop('disabled', false)
-		$command.aliasEnable.prop('disabled', false)
-		$command.alias.prop('disabled', !alias)
-		$command.description.prop('disabled', false)
-	}
+    const enable = $command.register.value()
+    const alias = $command.aliasEnable.value()
+    console.log('enable: ' + enable + ', alias: ' + alias)
+    if (!enable) {
+        $command.name.prop('disabled', true)
+        $command.aliasEnable.prop('disabled', true)
+        $command.alias.prop('disabled', true)
+        $command.description.prop('disabled', true)
+    } else {
+        $command.name.prop('disabled', false)
+        $command.aliasEnable.prop('disabled', false)
+        $command.alias.prop('disabled', !alias)
+        $command.description.prop('disabled', false)
+    }
 }
 $command.register.change(updateCommandState);
 $command.aliasEnable.change(updateCommandState);
 
 function generateCode(plains) {
-	const push = function(name, content) {
-		plains.push({ name: name, content: content });
-	};
-	push('.gitignore',
+    const push = function(name, content) {
+        plains.push({ name: name, content: content });
+    };
+    push('.gitignore',
 `.idea/
 *.iml
 *.ipr
@@ -148,8 +148,8 @@ run/
 !gradle-wrapper.jar
 !libs/*.jar
 `);
-	const package = $plugin.package.value()
-	push('build.gradle.kts',
+    const package = $plugin.package.value()
+    push('build.gradle.kts',
 `plugins {
     java
     ` + '`maven-publish`' + `
@@ -169,7 +169,7 @@ repositories {
 + ($depend.paper.value() ? `
     maven("https://repo.papermc.io/repository/maven-public/")` : ''
 ) + ($other.mythic.value() ? `
-	maven("https://mvn.lumine.io/repository/maven/")` : ''
+    maven("https://mvn.lumine.io/repository/maven/")` : ''
 ) + `
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     maven("https://jitpack.io")
@@ -181,7 +181,7 @@ dependencies {
     compileOnly("` + ($depend.paper.value() ? "io.papermc.paper:paper-api" : "org.spigotmc:spigot-api") + `:${$depend.minecraft.value()}-R0.1-SNAPSHOT")
     // compileOnly("org.spigotmc:spigot:${$depend.minecraft.value()}") // NMS
 `+ ($plugin.settings.vault.value() ? `
-	compileOnly("net.milkbowl.vault:VaultAPI:1.7")` : ''
+    compileOnly("net.milkbowl.vault:VaultAPI:1.7")` : ''
 ) + `
     compileOnly("me.clip:placeholderapi:2.11.6")`
 + ($other.mythic.value() ? `
@@ -215,7 +215,7 @@ tasks {
         mapOf(
             "org.intellij.lang.annotations" to "annotations.intellij",
             "org.jetbrains.annotations" to "annotations.jetbrains",
-	        "top.mrxiaom.pluginbase" to "base",`
+            "top.mrxiaom.pluginbase" to "base",`
 + ($depend.hikariCP.value() ? `
             "com.zaxxer.hikari" to "hikari",` : ''
 ) + ($depend.nbtapi.value() ? `
@@ -255,22 +255,22 @@ publishing {
     }
 }
 `);
-	push("gradle/wrapper/gradle-wrapper.properties",
+    push("gradle/wrapper/gradle-wrapper.properties",
 `distributionBase=GRADLE_USER_HOME
 distributionPath=wrapper/dists
 distributionUrl=https\://mirrors.cloud.tencent.com/gradle/gradle-8.5-bin.zip
 zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
 `);
-	const dependList = [];
-	if ($plugin.settings.vault.value())
-		dependList.push("Vault");
-	if ($other.mythic.value())
-		dependList.push("MythicMobs");
-	if ($other.playerPoints.value())
-		dependList.push("PlayerPoints");
+    const dependList = [];
+    if ($plugin.settings.vault.value())
+        dependList.push("Vault");
+    if ($other.mythic.value())
+        dependList.push("MythicMobs");
+    if ($other.playerPoints.value())
+        dependList.push("PlayerPoints");
 
-	push("src/main/resources/plugin.yml",
+    push("src/main/resources/plugin.yml",
 `name: ${$plugin.name.value()}
 version: '` + '${version}' + `'
 main: ${$plugin.package.value()}.${$plugin.mainClass.value()}
@@ -283,12 +283,12 @@ commands:
   ${$command.name.value()}:
     description: '${$command.description.value()}'`
   + ($command.aliasEnable.value() ? `
-	aliases: [ ${$command.alias.value()} ]` : ''
+    aliases: [ ${$command.alias.value()} ]` : ''
   )) : ''
 ) + `
 `);
-	if ($plugin.settings.database.value()) {
-		push("src/main/resources/database.yml",
+    if ($plugin.settings.database.value()) {
+        push("src/main/resources/database.yml",
 `# 添加 goto 选项，使用指定路径的配置文件作为数据库配置
 # 添加后，剩余其它选项可以全部删除
 # goto: 'path/to/database.yml'
@@ -317,18 +317,18 @@ mysql:
 sqlite:
   file: 'database.db'
 `);
-	}
+    }
 
-	const addJavaSourceCode = function(className, content) {
-		const i = className.lastIndexOf('.');
-		const realPackage = i < 0 ? package : (package + '.' + className.substring(0, i));
-		push('src/main/java/' + (package + '.' + className).replaceAll('.', '/') + '.java',
-		`package ${realPackage};
-		` + content);
-	};
+    const addJavaSourceCode = function(className, content) {
+        const i = className.lastIndexOf('.');
+        const realPackage = i < 0 ? package : (package + '.' + className.substring(0, i));
+        push('src/main/java/' + (package + '.' + className).replaceAll('.', '/') + '.java',
+        `package ${realPackage};
+        ` + content);
+    };
 
-	const mainClass = $plugin.mainClass.value();
-	addJavaSourceCode(mainClass, `
+    const mainClass = $plugin.mainClass.value();
+    addJavaSourceCode(mainClass, `
 import org.jetbrains.annotations.NotNull;
 import top.mrxiaom.pluginbase.BukkitPlugin;
 import top.mrxiaom.pluginbase.EconomyHolder;
@@ -372,7 +372,7 @@ public class ${mainClass} extends BukkitPlugin {
     }
 }
 `);
-	addJavaSourceCode("func.AbstractModule", `
+    addJavaSourceCode("func.AbstractModule", `
 import ${package}.${mainClass};
 
 public abstract class AbstractModule extends top.mrxiaom.pluginbase.func.AbstractModule<${mainClass}> {
@@ -381,7 +381,7 @@ public abstract class AbstractModule extends top.mrxiaom.pluginbase.func.Abstrac
     }
 }
 `);
-	addJavaSourceCode("func.AbstractPluginHolder", `
+    addJavaSourceCode("func.AbstractPluginHolder", `
 import ${package}.${mainClass};
 
 @SuppressWarnings({"unused"})
@@ -395,8 +395,8 @@ public abstract class AbstractPluginHolder extends top.mrxiaom.pluginbase.func.A
     }
 }
 `);
-	if ($command.register.value()) {
-		addJavaSourceCode("commands.CommandMain", `
+    if ($command.register.value()) {
+        addJavaSourceCode("commands.CommandMain", `
 import com.google.common.collect.Lists;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -423,10 +423,10 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
         if (args.length == 1 && "hello".equalsIgnoreCase(args[0])) {
             return t(sender, "Hello World!");
         }
-		if (args.length == 1 && "reload".equalsIgnoreCase(args[0]) && sender.isOp()) {
-			plugin.reloadConfig();
-			return t(sender, "&a配置文件已重载");
-		}
+        if (args.length == 1 && "reload".equalsIgnoreCase(args[0]) && sender.isOp()) {
+            plugin.reloadConfig();
+            return t(sender, "&a配置文件已重载");
+        }
         return true;
     }
 
@@ -456,73 +456,73 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     }
 }
 `);
-	}
+    }
 }
 
 $start.onclick = async () => {
-	$start.setAttribute("disabled", undefined)
-	$startText.innerHTML = "正在生成项目"
-	try {
-		const pluginName = $plugin.name.value()
-		let remotes = [
-			{ name: "gradle/wrapper/gradle-wrapper.jar", url: "https://bukkit.mcio.dev/assets/project/gradle/wrapper/gradle-wrapper.jar"  },
-			{ name: "gradlew", url: "https://bukkit.mcio.dev/assets/project/gradlew" },
-			{ name: "gradlew.bat", url: "https://bukkit.mcio.dev/assets/project/gradlew.bat" },
-		], plains = [
-			{ name: "settings.gradle.kts", content: "rootProject.name = \"" + pluginName + "\"\n" },
-		]
+    $start.setAttribute("disabled", undefined)
+    $startText.innerHTML = "正在生成项目"
+    try {
+        const pluginName = $plugin.name.value()
+        let remotes = [
+            { name: "gradle/wrapper/gradle-wrapper.jar", url: "https://bukkit.mcio.dev/assets/project/gradle/wrapper/gradle-wrapper.jar"  },
+            { name: "gradlew", url: "https://bukkit.mcio.dev/assets/project/gradlew" },
+            { name: "gradlew.bat", url: "https://bukkit.mcio.dev/assets/project/gradlew.bat" },
+        ], plains = [
+            { name: "settings.gradle.kts", content: "rootProject.name = \"" + pluginName + "\"\n" },
+        ]
 
-		generateCode(plains)
+        generateCode(plains)
 
-		const fileStream = streamSaver.createWriteStream(pluginName + '.zip')
-		const readableZipStream = new ZIP({
-			start(ctrl) { },
-			async pull(ctrl) {
-				let arr = []
-				remotes.forEach(el=>arr.push(new Promise(resolve=>{fetch(el.url).then(resp=>(resp.status==200)?()=>resp.body:null).then(stream=>{resolve({name:el.name,stream:stream})})})))
-				plains.forEach(el=>arr.push(new Promise(resolve=>{resolve({name:el.name,stream(){return new ReadableStream({start(ctrl){ctrl.enqueue(new TextEncoder().encode(el.content));ctrl.close()}})}})})))
-				await Promise.all(arr).then(res => {
-					let nameMapList = []
-					res.forEach(item => {
-						let name = item.name
-						const stream = item.stream
-						let nameList = nameMapList.map(nameMap=>nameMap.name)
-						if (nameList.indexOf(name) == -1) {
-							nameMapList.push({ name: name, cnt: 0 })
-						} else {
-							let nameItem = nameMapList.find(item=>item.name==name)
-							nameItem.cnt += 1
-							let fileName = name.substring(0, name.lastIndexOf('.'))
-							let suffix = name.substr(name.lastIndexOf('.'))
-							name = fileName + "(" + nameItem.cnt + ")" + suffix
-						}
-						if (item.stream) ctrl.enqueue({ name, stream })
-					})
-				})
+        const fileStream = streamSaver.createWriteStream(pluginName + '.zip')
+        const readableZipStream = new ZIP({
+            start(ctrl) { },
+            async pull(ctrl) {
+                let arr = []
+                remotes.forEach(el=>arr.push(new Promise(resolve=>{fetch(el.url).then(resp=>(resp.status==200)?()=>resp.body:null).then(stream=>{resolve({name:el.name,stream:stream})})})))
+                plains.forEach(el=>arr.push(new Promise(resolve=>{resolve({name:el.name,stream(){return new ReadableStream({start(ctrl){ctrl.enqueue(new TextEncoder().encode(el.content));ctrl.close()}})}})})))
+                await Promise.all(arr).then(res => {
+                    let nameMapList = []
+                    res.forEach(item => {
+                        let name = item.name
+                        const stream = item.stream
+                        let nameList = nameMapList.map(nameMap=>nameMap.name)
+                        if (nameList.indexOf(name) == -1) {
+                            nameMapList.push({ name: name, cnt: 0 })
+                        } else {
+                            let nameItem = nameMapList.find(item=>item.name==name)
+                            nameItem.cnt += 1
+                            let fileName = name.substring(0, name.lastIndexOf('.'))
+                            let suffix = name.substr(name.lastIndexOf('.'))
+                            name = fileName + "(" + nameItem.cnt + ")" + suffix
+                        }
+                        if (item.stream) ctrl.enqueue({ name, stream })
+                    })
+                })
 
-				ctrl.close()
-			}
-		})
+                ctrl.close()
+            }
+        })
 
-		// more optimized
-		if (window.WritableStream && readableZipStream.pipeTo) {
-			return readableZipStream.pipeTo(fileStream).then(() => {
-				console.log('done writing')
-				$start.removeAttribute("disabled")
-				$startText.innerHTML = "生成并下载项目"
-			})
-		}
+        // more optimized
+        if (window.WritableStream && readableZipStream.pipeTo) {
+            return readableZipStream.pipeTo(fileStream).then(() => {
+                console.log('done writing')
+                $start.removeAttribute("disabled")
+                $startText.innerHTML = "生成并下载项目"
+            })
+        }
 
-		// less optimized
-		const writer = fileStream.getWriter()
-		const reader = readableZipStream.getReader()
-		const pump = () => reader.read()
-			.then(res => res.done ? writer.close() : writer.write(res.value).then(pump))
+        // less optimized
+        const writer = fileStream.getWriter()
+        const reader = readableZipStream.getReader()
+        const pump = () => reader.read()
+            .then(res => res.done ? writer.close() : writer.write(res.value).then(pump))
 
-		pump()
-	} catch (e) {
-		console.log(e)
-	}
-	$start.removeAttribute("disabled")
-	$startText.innerHTML = "生成并下载项目"
+        pump()
+    } catch (e) {
+        console.log(e)
+    }
+    $start.removeAttribute("disabled")
+    $startText.innerHTML = "生成并下载项目"
 }

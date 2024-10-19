@@ -196,7 +196,7 @@ dependencies {
     implementation("net.kyori:adventure-platform-bukkit:4.3.4")
     implementation("net.kyori:adventure-text-minimessage:4.17.0")` : ''
 ) + ($depend.nbtapi.value() ? `
-    implementation("de.tr7zw:item-nbt-api:2.12.3")` : ''
+    implementation("de.tr7zw:item-nbt-api:2.13.2")` : ''
 ) + ($depend.hikariCP.value() ? `
     implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }` : ''
 ) + `

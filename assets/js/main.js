@@ -174,6 +174,7 @@ repositories {
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     maven("https://jitpack.io")
     maven("https://repo.rosewooddev.io/repository/public/")
+    maven("https://s01.oss.sonatype.org/content/groups/public/")
     maven("https://oss.sonatype.org/content/groups/public/")
 }
 
@@ -200,8 +201,8 @@ dependencies {
 ) + ($depend.hikariCP.value() ? `
     implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }` : ''
 ) + `
-    implementation("org.jetbrains:annotations:21.0.0")
-    implementation("top.mrxiaom:PluginBase:1.0.9")
+    implementation("org.jetbrains:annotations:24.0.0")
+    implementation("top.mrxiaom:PluginBase:1.1.5")
 }
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)

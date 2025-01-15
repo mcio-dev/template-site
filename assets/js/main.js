@@ -197,12 +197,12 @@ dependencies {
     implementation("net.kyori:adventure-platform-bukkit:4.3.4")
     implementation("net.kyori:adventure-text-minimessage:4.17.0")` : ''
 ) + ($depend.nbtapi.value() ? `
-    implementation("de.tr7zw:item-nbt-api:2.14.0")` : ''
+    implementation("de.tr7zw:item-nbt-api:2.14.1")` : ''
 ) + ($depend.hikariCP.value() ? `
     implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }` : ''
 ) + `
     implementation("org.jetbrains:annotations:24.0.0")
-    implementation("top.mrxiaom:PluginBase:1.1.5")
+    implementation("top.mrxiaom:PluginBase:1.2.0")
 }
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)

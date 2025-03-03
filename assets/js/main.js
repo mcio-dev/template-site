@@ -202,7 +202,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }` : ''
 ) + `
     implementation("org.jetbrains:annotations:24.0.0")
-    implementation("top.mrxiaom:PluginBase:1.2.2")
+    implementation("top.mrxiaom:PluginBase:1.3.2")
 }
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)

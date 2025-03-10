@@ -150,7 +150,9 @@ run/
 `);
     const package = $plugin.package.value()
     push('build.gradle.kts',
-`plugins {
+`import java.util.*
+
+plugins {
     java
     ` + '`maven-publish`' + `
     id ("com.github.johnrengelman.shadow") version "7.0.0"
@@ -164,6 +166,9 @@ val shadowGroup = "${$depend.shadowTarget.value()}"
 repositories {
     mavenLocal()
     mavenCentral()
+    if (Locale.getDefault().country == "CN") {
+        maven("https://maven.fastmirror.net/repositories/minecraft/")
+    }
     maven("https://repo.codemc.io/repository/maven-public/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")`
 + ($depend.paper.value() ? `
@@ -202,7 +207,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }` : ''
 ) + `
     implementation("org.jetbrains:annotations:24.0.0")
-    implementation("top.mrxiaom:PluginBase:1.3.2")
+    implementation("top.mrxiaom:PluginBase:1.3.4")
 }
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)

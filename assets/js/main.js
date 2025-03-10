@@ -269,12 +269,13 @@ zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
 `);
     const dependList = [];
+    const softDependList = ['PlaceholderAPI'];
     if ($plugin.settings.vault.value())
         dependList.push("Vault");
     if ($other.mythic.value())
-        dependList.push("MythicMobs");
+        softDependList.push("MythicMobs");
     if ($other.playerPoints.value())
-        dependList.push("PlayerPoints");
+        softDependList.push("PlayerPoints");
 
     push("src/main/resources/plugin.yml",
 `name: ${$plugin.name.value()}
@@ -282,7 +283,7 @@ version: '` + '${version}' + `'
 main: ${$plugin.package.value()}.${$plugin.mainClass.value()}
 api-version: ${$plugin.apiVersion.value()}
 depend: [ ${dependList.join(', ')} ]
-softdepend: [ PlaceholderAPI ]
+softdepend: [ ${softDependList.join(', ')} ]
 authors: [ ${$plugin.authors.value()} ]`
 + ($command.register.value() ? (`
 commands:
@@ -302,7 +303,7 @@ commands:
 # 数据库类型，可选 sqlite 与 mysql
 type: sqlite
 # 表名前缀
-table_prefix: 'pluginbase_'
+table_prefix: '${$plugin.name.value().toLowerCase()}_'
 # JDBC 参数
 query: 'useSSL=false&allowPublicKeyRetrieval=true&verifyServerCertificate=false&serverTimezone=UTC'
 # 连接池设置

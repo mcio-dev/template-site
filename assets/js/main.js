@@ -329,9 +329,12 @@ sqlite:
 
     const mainClass = $plugin.mainClass.value();
     addJavaSourceCode(mainClass, `
-import org.jetbrains.annotations.NotNull;
-import top.mrxiaom.pluginbase.BukkitPlugin;
-import top.mrxiaom.pluginbase.EconomyHolder;
+import top.mrxiaom.pluginbase.BukkitPlugin;`
++ ($plugin.settings.vault.value() ? `
+import top.mrxiaom.pluginbase.economy.EnumEconomy;
+import top.mrxiaom.pluginbase.economy.IEconomy;
+import org.jetbrains.annotations.NotNull;` : ''
+) + `
 
 public class ${mainClass} extends BukkitPlugin {
     public static ${mainClass} getInstance() {
@@ -343,16 +346,17 @@ public class ${mainClass} extends BukkitPlugin {
                 .bungee(${$plugin.settings.bungeecord.value()})
                 .adventure(${$depend.adventure.value()})
                 .database(${$plugin.settings.database.value()})
-                .reconnectDatabaseWhenReloadConfig(${$plugin.settings.dbReload.value()})
-                .vaultEconomy(${$plugin.settings.vault.value()})`
- + ($plugin.settings.ignore.value() ? `
+                .reconnectDatabaseWhenReloadConfig(${$plugin.settings.dbReload.value()})`
++ ($plugin.settings.vault.value() ? `
+                .economy(EnumEconomy.VAULT)` : ''
+) + ($plugin.settings.ignore.value() ? `
                 .scanIgnore("${$depend.shadowTarget.value()}")` : ''
 ) + `
         );
     }`
 + ($plugin.settings.vault.value() ? `
     @NotNull
-    public EconomyHolder getEconomy() {
+    public IEconomy getEconomy() {
         return options.economy();
     }` : ''
 ) + `

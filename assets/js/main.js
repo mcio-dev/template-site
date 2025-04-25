@@ -171,7 +171,7 @@ repositories {
 ) + ($other.mythic.value() ? `
     maven("https://mvn.lumine.io/repository/maven/")` : ''
 ) + `
-    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    maven("https://repo.helpch.at/releases/")
     maven("https://jitpack.io")
     maven("https://repo.rosewooddev.io/repository/public/")
 }

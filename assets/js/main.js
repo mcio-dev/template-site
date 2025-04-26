@@ -199,6 +199,7 @@ dependencies {
 ) + ($depend.hikariCP.value() ? `
     implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }` : ''
 ) + `
+    // implementation("com.github.technicallycoded:FoliaLib:0.4.4")
     implementation("org.jetbrains:annotations:24.0.0")
     implementation("top.mrxiaom:PluginBase:1.4.0")
 }
@@ -222,6 +223,7 @@ tasks {
 ) + ($depend.adventure.value() ? `
             "net.kyori" to "kyori",` : ''
 ) + `
+            // "com.tcoded.folialib" to "folialib",
         ).forEach { (original, target) ->
             relocate(original, "$shadowGroup.$target")
         }
@@ -328,7 +330,10 @@ sqlite:
     };
 
     const mainClass = $plugin.mainClass.value();
-    addJavaSourceCode(mainClass, `
+    addJavaSourceCode(mainClass,
+($plugin.settings.nbtapi.value() ? `
+import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;` : ''
+) + `
 import top.mrxiaom.pluginbase.BukkitPlugin;`
 + ($plugin.settings.vault.value() ? `
 import top.mrxiaom.pluginbase.economy.EnumEconomy;
@@ -353,14 +358,24 @@ public class ${mainClass} extends BukkitPlugin {
                 .scanIgnore("${$depend.shadowTarget.value()}")` : ''
 ) + `
         );
+        // this.scheduler = new FoliaLibScheduler(this);
     }`
 + ($plugin.settings.vault.value() ? `
     @NotNull
     public IEconomy getEconomy() {
         return options.economy();
     }` : ''
-) + `
-`+ ($plugin.settings.database.value() ? `
+)
++ ($plugin.settings.nbtapi.value() ? `
+
+    @Override
+    protected void beforeLoad() {
+        MinecraftVersion.replaceLogger(getLogger());
+        MinecraftVersion.disableUpdateCheck();
+        MinecraftVersion.disableBStats();
+        MinecraftVersion.getVersion();
+    }` : ''
+) + ($plugin.settings.database.value() ? `
 
     @Override
     protected void beforeEnable() {

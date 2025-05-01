@@ -331,7 +331,7 @@ sqlite:
 
     const mainClass = $plugin.mainClass.value();
     addJavaSourceCode(mainClass,
-($plugin.settings.nbtapi.value() ? `
+($depend.nbtapi.value() ? `
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;` : ''
 ) + `
 import top.mrxiaom.pluginbase.BukkitPlugin;`
@@ -366,7 +366,7 @@ public class ${mainClass} extends BukkitPlugin {
         return options.economy();
     }` : ''
 )
-+ ($plugin.settings.nbtapi.value() ? `
++ ($depend.nbtapi.value() ? `
 
     @Override
     protected void beforeLoad() {

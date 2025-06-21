@@ -191,9 +191,9 @@ dependencies {
     compileOnly("org.black_ixx:playerpoints:3.2.7")
 ` : '') + `
 ` + ($depend.adventure.value() ? `
-    implementation("net.kyori:adventure-api:4.20.0")
-    implementation("net.kyori:adventure-platform-bukkit:4.3.4")
-    implementation("net.kyori:adventure-text-minimessage:4.20.0")` : ''
+    implementation("net.kyori:adventure-api:4.21.0")
+    implementation("net.kyori:adventure-platform-bukkit:4.4.0")
+    implementation("net.kyori:adventure-text-minimessage:4.21.0")` : ''
 ) + ($depend.nbtapi.value() ? `
     implementation("de.tr7zw:item-nbt-api:2.15.0")` : ''
 ) + ($depend.hikariCP.value() ? `
@@ -201,7 +201,7 @@ dependencies {
 ) + `
     // implementation("com.github.technicallycoded:FoliaLib:0.4.4")
     implementation("org.jetbrains:annotations:24.0.0")
-    implementation("top.mrxiaom:PluginBase:1.4.0")
+    implementation("top.mrxiaom:PluginBase:1.4.8")
 }
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)

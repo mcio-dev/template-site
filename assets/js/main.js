@@ -27,6 +27,24 @@ function $v(selector) {
     }
     return element
 }
+
+// 组件版本
+const versions = {
+    gradle: '8.5',
+    // https://github.com/MrXiaoM/PluginBase/releases
+    PluginBase: '1.4.9',
+    // https://github.com/tr7zw/Item-NBT-API/releases
+    NBTAPI: '2.15.1-SNAPSHOT',
+    // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
+    PlaceholderAPI: '2.11.6',
+    adventure: {
+        // https://github.com/KyoriPowered/adventure/releases
+        common: '4.22.0',
+        // https://github.com/KyoriPowered/adventure-platform/releases
+        bukkit: '4.4.0'
+    },
+}
+
 const $plugin = {
     name: $v("#plugin-name"),
     version: $v("#plugin-version"),
@@ -153,7 +171,7 @@ run/
 `plugins {
     java
     ` + '`maven-publish`' + `
-    id ("com.github.johnrengelman.shadow") version "7.0.0"
+    id ("com.gradleup.shadow") version "8.3.0"
 }
 
 group = "${package}"
@@ -182,7 +200,7 @@ dependencies {
 `+ ($plugin.settings.vault.value() ? `
     compileOnly("net.milkbowl.vault:VaultAPI:1.7")` : ''
 ) + `
-    compileOnly("me.clip:placeholderapi:2.11.6")`
+    compileOnly("me.clip:placeholderapi:` + versions.PlaceholderAPI + `")`
 + ($other.mythic.value() ? `
     compileOnly("io.lumine:Mythic-Dist:4.13.0")
     compileOnly("io.lumine:Mythic:5.6.2")
@@ -190,18 +208,18 @@ dependencies {
 ) + ($other.playerPoints.value() ? `
     compileOnly("org.black_ixx:playerpoints:3.2.7")
 ` : '') + `
-` + ($depend.adventure.value() ? `
-    implementation("net.kyori:adventure-api:4.21.0")
-    implementation("net.kyori:adventure-platform-bukkit:4.4.0")
-    implementation("net.kyori:adventure-text-minimessage:4.21.0")` : ''
-) + ($depend.nbtapi.value() ? `
-    implementation("de.tr7zw:item-nbt-api:2.15.0")` : ''
+` + ($depend.adventure.value() ? (`
+    implementation("net.kyori:adventure-api:` + versions.adventure.common + `")
+    implementation("net.kyori:adventure-platform-bukkit:` + versions.adventure.bukkit + `")
+    implementation("net.kyori:adventure-text-minimessage:` + versions.adventure.common + `")`) : ''
+) + ($depend.nbtapi.value() ? (`
+    implementation("de.tr7zw:item-nbt-api:` + versions.NBTAPI + `")`) : ''
 ) + ($depend.hikariCP.value() ? `
     implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }` : ''
 ) + `
     // implementation("com.github.technicallycoded:FoliaLib:0.4.4")
     implementation("org.jetbrains:annotations:24.0.0")
-    implementation("top.mrxiaom:PluginBase:1.4.8")
+    implementation("top.mrxiaom:PluginBase:` + versions.PluginBase + `")
 }
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)
@@ -259,7 +277,7 @@ publishing {
     push("gradle/wrapper/gradle-wrapper.properties",
 `distributionBase=GRADLE_USER_HOME
 distributionPath=wrapper/dists
-distributionUrl=https\://mirrors.cloud.tencent.com/gradle/gradle-8.5-bin.zip
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.5-bin.zip
 zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
 `);
@@ -310,6 +328,7 @@ hikari:
   maximum_pool_size: 36
 # MySQL 设置
 mysql:
+  version: 8
   host: localhost
   port: 3306
   user: 'root'

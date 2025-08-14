@@ -32,9 +32,9 @@ function $v(selector) {
 const versions = {
     gradle: '8.5',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.4.9',
+    PluginBase: '1.5.8',
     // https://github.com/tr7zw/Item-NBT-API/releases
-    NBTAPI: '2.15.1-SNAPSHOT',
+    NBTAPI: '2.15.2-SNAPSHOT',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
     PlaceholderAPI: '2.11.6',
     adventure: {
@@ -200,7 +200,7 @@ dependencies {
 `+ ($plugin.settings.vault.value() ? `
     compileOnly("net.milkbowl.vault:VaultAPI:1.7")` : ''
 ) + `
-    compileOnly("me.clip:placeholderapi:` + versions.PlaceholderAPI + `")`
+    compileOnly("me.clip:placeholderapi:${versions.PlaceholderAPI}")`
 + ($other.mythic.value() ? `
     compileOnly("io.lumine:Mythic-Dist:4.13.0")
     compileOnly("io.lumine:Mythic:5.6.2")
@@ -209,17 +209,18 @@ dependencies {
     compileOnly("org.black_ixx:playerpoints:3.2.7")
 ` : '') + `
 ` + ($depend.adventure.value() ? (`
-    implementation("net.kyori:adventure-api:` + versions.adventure.common + `")
-    implementation("net.kyori:adventure-platform-bukkit:` + versions.adventure.bukkit + `")
-    implementation("net.kyori:adventure-text-minimessage:` + versions.adventure.common + `")`) : ''
+    implementation("net.kyori:adventure-api:${versions.adventure.common}")
+    implementation("net.kyori:adventure-platform-bukkit:${versions.adventure.bukkit}")
+    implementation("net.kyori:adventure-text-minimessage:${versions.adventure.common}")`) : ''
 ) + ($depend.nbtapi.value() ? (`
-    implementation("de.tr7zw:item-nbt-api:` + versions.NBTAPI + `")`) : ''
+    implementation("de.tr7zw:item-nbt-api:${versions.NBTAPI}")`) : ''
 ) + ($depend.hikariCP.value() ? `
     implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }` : ''
 ) + `
-    // implementation("com.github.technicallycoded:FoliaLib:0.4.4")
+    // implementation("com.github.technicallycoded:FoliaLib:0.4.4") { isTransitive = false }
     implementation("org.jetbrains:annotations:24.0.0")
-    implementation("top.mrxiaom:PluginBase:` + versions.PluginBase + `")
+    implementation("top.mrxiaom:PluginBase:${versions.PluginBase}")
+    // implementation("top.mrxiaom:LibrariesResolver:${versions.PluginBase}:all")
 }
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)
@@ -229,7 +230,6 @@ java {
 }
 tasks {
     shadowJar {
-        archiveClassifier.set("")
         mapOf(
             "org.intellij.lang.annotations" to "annotations.intellij",
             "org.jetbrains.annotations" to "annotations.jetbrains",
@@ -246,8 +246,14 @@ tasks {
             relocate(original, "$shadowGroup.$target")
         }
     }
-    build {
+    val copyTask = create<Copy>("copyBuildArtifact") {
         dependsOn(shadowJar)
+        from(shadowJar.get().outputs)
+        rename { "\${project.name}-$version.jar" }
+        into(rootProject.file("out"))
+    }
+    build {
+        dependsOn(copyTask)
     }
     withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
@@ -277,7 +283,7 @@ publishing {
     push("gradle/wrapper/gradle-wrapper.properties",
 `distributionBase=GRADLE_USER_HOME
 distributionPath=wrapper/dists
-distributionUrl=https\://services.gradle.org/distributions/gradle-8.5-bin.zip
+distributionUrl=https\://services.gradle.org/distributions/gradle-${versions.gradle}-bin.zip
 zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
 `);
@@ -289,14 +295,30 @@ zipStorePath=wrapper/dists
         softDependList.push("MythicMobs");
     if ($other.playerPoints.value())
         softDependList.push("PlayerPoints");
+    var depend = "";
+    if (dependList.length > 0) {
+        for (var i = 0; i < dependList.length; i++) {
+            depend += "\n  - " + dependList[i];
+        }
+    } else {
+        depend += "[]";
+    }
+    var softDepend = "";
+    if (softDependList.length > 0) {
+        for (var i = 0; i < softDependList.length; i++) {
+            softDepend += "\n  - " + softDependList[i];
+        }
+    } else {
+        softDepend += "[]";
+    }
 
     push("src/main/resources/plugin.yml",
 `name: ${$plugin.name.value()}
 version: '` + '${version}' + `'
 main: ${$plugin.package.value()}.${$plugin.mainClass.value()}
 api-version: ${$plugin.apiVersion.value()}
-depend: [ ${dependList.join(', ')} ]
-softdepend: [ ${softDependList.join(', ')} ]
+depend: ${depend}
+softdepend: ${softDepend}
 authors: [ ${$plugin.authors.value()} ]`
 + ($command.register.value() ? (`
 commands:

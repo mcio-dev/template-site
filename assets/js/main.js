@@ -33,7 +33,7 @@ var oldPackage = $('#plugin-package').val();
 
 $('#plugin-name').on('input', function() {
     var newPluginName = $('#plugin-name').val();
-    if (newPluginName.length > 0) {
+    if (newPluginName.length > 4) {
         var oldPluginMainClass = $('#plugin-mainclass').val();
         var oldCommandDesc = $('#command-description').val();
         
@@ -45,7 +45,7 @@ $('#plugin-name').on('input', function() {
 
 $('#plugin-package').on('input', function() {
     var newPackage = $('#plugin-package').val();
-    if (newPackage.length > 0) {
+    if (newPackage.length > 4) {
         var oldShadowTarget = $('#depend-shadow-target').val();
 
         $('#depend-shadow-target').val(oldShadowTarget.replace(oldPackage, newPackage));

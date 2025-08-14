@@ -28,6 +28,27 @@ function $v(selector) {
     return element
 }
 
+var oldPluginName = $('#plugin-name').val();
+var oldPackage = $('#plugin-package').val();
+
+$('#plugin-name').on('input', function() {
+    var newPluginName = $('#plugin-name').val();
+    var oldPluginMainClass = $('#plugin-mainclass').val();
+    var oldCommandDesc = $('#command-description').val();
+    
+    $('#plugin-mainclass').val(oldPluginMainClass.replace(oldPluginName, newPluginName));
+    $('#command-description').val(oldCommandDesc.replace(oldPluginName, newPluginName));
+    oldPluginName = newPluginName;
+});
+
+$('#plugin-package').on('input', function() {
+    var newPackage = $('#plugin-package').val();
+    var oldShadowTarget = $('#depend-shadow-target').val();
+
+    $('#depend-shadow-target').val(oldShadowTarget.replace(oldPackage, newPackage));
+    oldPackage = newPackage;
+});
+
 // 组件版本
 const versions = {
     gradle: '8.5',

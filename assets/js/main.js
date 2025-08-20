@@ -57,7 +57,7 @@ $('#plugin-package').on('input', function() {
 const versions = {
     gradle: '8.5',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.5.8',
+    PluginBase: '1.6.0',
     // https://github.com/tr7zw/Item-NBT-API/releases
     NBTAPI: '2.15.2-SNAPSHOT',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
@@ -205,7 +205,6 @@ val targetJavaVersion = 8
 val shadowGroup = "${$depend.shadowTarget.value()}"
 
 repositories {
-    mavenLocal()
     mavenCentral()
     maven("https://repo.codemc.io/repository/maven-public/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")`
@@ -222,6 +221,7 @@ repositories {
 dependencies {
     compileOnly("` + ($depend.paper.value() ? "io.papermc.paper:paper-api" : "org.spigotmc:spigot-api") + `:${$depend.minecraft.value()}-R0.1-SNAPSHOT")
     // compileOnly("org.spigotmc:spigot:${$depend.minecraft.value()}") // NMS
+    compileOnly("org.jetbrains:annotations:24.0.0")
 `+ ($plugin.settings.vault.value() ? `
     compileOnly("net.milkbowl.vault:VaultAPI:1.7")` : ''
 ) + `
@@ -243,8 +243,8 @@ dependencies {
     implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }` : ''
 ) + `
     // implementation("com.github.technicallycoded:FoliaLib:0.4.4") { isTransitive = false }
-    implementation("org.jetbrains:annotations:24.0.0")
-    implementation("top.mrxiaom:PluginBase:${versions.PluginBase}")
+    implementation("top.mrxiaom.pluginbase:library:${versions.PluginBase}")
+    implementation("top.mrxiaom.pluginbase:paper:${versions.PluginBase}")
     // implementation("top.mrxiaom:LibrariesResolver:${versions.PluginBase}:all")
 }
 java {
@@ -256,8 +256,6 @@ java {
 tasks {
     shadowJar {
         mapOf(
-            "org.intellij.lang.annotations" to "annotations.intellij",
-            "org.jetbrains.annotations" to "annotations.jetbrains",
             "top.mrxiaom.pluginbase" to "base",`
 + ($depend.hikariCP.value() ? `
             "com.zaxxer.hikari" to "hikari",` : ''
@@ -392,20 +390,23 @@ sqlite:
         const realPackage = i < 0 ? package : (package + '.' + className.substring(0, i));
         push('src/main/java/' + (package + '.' + className).replaceAll('.', '/') + '.java',
         `package ${realPackage};
-        ` + content);
+` + content);
     };
 
     const mainClass = $plugin.mainClass.value();
     addJavaSourceCode(mainClass,
 ($depend.nbtapi.value() ? `
-import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;` : ''
-) + `
+import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;` : '') + `
 import top.mrxiaom.pluginbase.BukkitPlugin;`
 + ($plugin.settings.vault.value() ? `
 import top.mrxiaom.pluginbase.economy.EnumEconomy;
-import top.mrxiaom.pluginbase.economy.IEconomy;
-import org.jetbrains.annotations.NotNull;` : ''
-) + `
+import top.mrxiaom.pluginbase.economy.IEconomy;` : ''
+) + `import top.mrxiaom.pluginbase.paper.PaperFactory;
+import top.mrxiaom.pluginbase.utils.inventory.InventoryFactory;
+import top.mrxiaom.pluginbase.utils.item.ItemEditor;
+import top.mrxiaom.pluginbase.utils.scheduler.FoliaLibScheduler;
+
+import org.jetbrains.annotations.NotNull;
 
 public class ${mainClass} extends BukkitPlugin {
     public static ${mainClass} getInstance() {
@@ -425,14 +426,22 @@ public class ${mainClass} extends BukkitPlugin {
 ) + `
         );
         // this.scheduler = new FoliaLibScheduler(this);
-    }`
-+ ($plugin.settings.vault.value() ? `
+    }
+
+    @Override
+    public @NotNull ItemEditor initItemEditor() {
+        return PaperFactory.createItemEditor();
+    }
+
+    @Override
+    public @NotNull InventoryFactory initInventoryFactory() {
+        return PaperFactory.createInventoryFactory();
+    }
+` + ($plugin.settings.vault.value() ? `
     @NotNull
     public IEconomy getEconomy() {
         return options.economy();
-    }` : ''
-)
-+ ($depend.nbtapi.value() ? `
+    }` : '') + ($depend.nbtapi.value() ? `
 
     @Override
     protected void beforeLoad() {
@@ -440,8 +449,7 @@ public class ${mainClass} extends BukkitPlugin {
         MinecraftVersion.disableUpdateCheck();
         MinecraftVersion.disableBStats();
         MinecraftVersion.getVersion();
-    }` : ''
-) + ($plugin.settings.database.value() ? `
+    }` : '') + ($plugin.settings.database.value() ? `
 
     @Override
     protected void beforeEnable() {
@@ -504,10 +512,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (args.length == 1 && "hello".equalsIgnoreCase(args[0])) {
-            return t(sender, "Hello World!");
-        }
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
         if (args.length == 1 && "reload".equalsIgnoreCase(args[0]) && sender.isOp()) {
             plugin.reloadConfig();
             return t(sender, "&a配置文件已重载");
@@ -515,18 +520,14 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
         return true;
     }
 
-    private static final List<String> emptyList = Lists.newArrayList();
-    private static final List<String> listArg0 = Lists.newArrayList(
-            "hello");
-    private static final List<String> listOpArg0 = Lists.newArrayList(
-            "hello", "reload");
-    @Nullable
+    private static final List<String> listArg0 = Lists.newArrayList();
+    private static final List<String> listOpArg0 = Lists.newArrayList("reload");
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String alias, @NotNull String[] args) {
         if (args.length == 1) {
             return startsWith(sender.isOp() ? listOpArg0 : listArg0, args[0]);
         }
-        return emptyList;
+        return Collections.emptyList();
     }
 
     public List<String> startsWith(Collection<String> list, String s) {

@@ -57,9 +57,9 @@ $('#plugin-package').on('input', function() {
 const versions = {
     gradle: '8.5',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.6.0',
+    PluginBase: '1.6.6',
     // https://github.com/tr7zw/Item-NBT-API/releases
-    NBTAPI: '2.15.2-SNAPSHOT',
+    NBTAPI: '2.15.3-SNAPSHOT',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
     PlaceholderAPI: '2.11.6',
     adventure: {
@@ -202,6 +202,7 @@ run/
 group = "${package}"
 version = "${$plugin.version.value()}"
 val targetJavaVersion = 8
+val pluginBaseVersion = "${versions.PluginBase}"
 val shadowGroup = "${$depend.shadowTarget.value()}"
 
 repositories {
@@ -243,9 +244,9 @@ dependencies {
     implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }` : ''
 ) + `
     // implementation("com.github.technicallycoded:FoliaLib:0.4.4") { isTransitive = false }
-    implementation("top.mrxiaom.pluginbase:library:${versions.PluginBase}")
-    implementation("top.mrxiaom.pluginbase:paper:${versions.PluginBase}")
-    // implementation("top.mrxiaom:LibrariesResolver:${versions.PluginBase}:all")
+    implementation("top.mrxiaom.pluginbase:library:$pluginBaseVersion")
+    implementation("top.mrxiaom.pluginbase:paper:$pluginBaseVersion")
+    // implementation("top.mrxiaom:LibrariesResolver:$pluginBaseVersion")
 }
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)

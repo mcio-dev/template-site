@@ -255,7 +255,7 @@ dependencies {
 ) + ($depend.hikariCP.value() ? `
     implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }` : ''
 ) + `
-    // implementation("com.github.technicallycoded:FoliaLib:0.4.4") { isTransitive = false }
+    implementation("com.github.technicallycoded:FoliaLib:0.4.4") { isTransitive = false }
     for (artifact in pluginBaseModules) {
         implementation("top.mrxiaom.pluginbase:$artifact:$pluginBaseVersion")
     }
@@ -290,7 +290,7 @@ tasks {
 ) + (($depend.adventure.value() && !$depend.resolver.value()) ? `
             "net.kyori" to "kyori",` : ''
 ) + `
-            // "com.tcoded.folialib" to "folialib",
+            "com.tcoded.folialib" to "folialib",
         ).forEach { (original, target) ->
             relocate(original, "$shadowGroup.$target")
         }
@@ -368,7 +368,8 @@ main: ${$plugin.packageName.value()}.${$plugin.mainClass.value()}
 api-version: ${$plugin.apiVersion.value()}
 depend: ${depend}
 softdepend: ${softDepend}
-authors: [ ${$plugin.authors.value()} ]`
+authors: [ ${$plugin.authors.value()} ]
+folia-supported: true`
 + ($command.register.value() ? (`
 commands:
   ${$command.name.value()}:
@@ -460,7 +461,7 @@ public class ${mainClass} extends BukkitPlugin {
                 .scanIgnore("${$depend.shadowTarget.value()}")` : ''
 ) + `
         );
-        // this.scheduler = new FoliaLibScheduler(this);
+        this.scheduler = new FoliaLibScheduler(this);
 ` + ($depend.resolver.value() ? `
         info("正在检查依赖库状态");
         File librariesDir = ClassLoaderWrapper.isSupportLibraryLoader

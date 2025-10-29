@@ -266,10 +266,10 @@ dependencies {
 + ($depend.resolver.value() ? `
 buildConfig {
     className("BuildConstants")
-    packageName("top.mrxiaom.sweet.locks")
+    packageName("${packageName}")
 
     base.doResolveLibraries()
-    buildConfigField("String", "VERSION", "\"\${project.version}\"")
+    buildConfigField("String", "VERSION", "\${project.version}")
     buildConfigField("String[]", "RESOLVED_LIBRARIES", base.join())
 }` : ''
 ) + `
@@ -433,9 +433,13 @@ import top.mrxiaom.pluginbase.paper.PaperFactory;` : ''
 import top.mrxiaom.pluginbase.utils.inventory.InventoryFactory;
 import top.mrxiaom.pluginbase.utils.item.ItemEditor;
 import top.mrxiaom.pluginbase.utils.scheduler.FoliaLibScheduler;`
-+ ($plugin.settings.vault.value() ? `
++ ($depend.resolver.value() ? `
 import top.mrxiaom.pluginbase.utils.ClassLoaderWrapper;
-import top.mrxiaom.pluginbase.resolver.DefaultLibraryResolver;` : ''
+import top.mrxiaom.pluginbase.resolver.DefaultLibraryResolver;
+
+import java.io.File;
+import java.net.URL;
+import java.util.List;` : ''
 ) + `
 
 import org.jetbrains.annotations.NotNull;

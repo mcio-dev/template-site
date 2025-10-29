@@ -28,38 +28,13 @@ function $v(selector) {
     return element
 }
 
-var oldPluginName = $('#plugin-name').val();
-var oldPackage = $('#plugin-package').val();
-
-$('#plugin-name').on('input', function() {
-    var newPluginName = $('#plugin-name').val();
-    if (newPluginName.length > 4) {
-        var oldPluginMainClass = $('#plugin-mainclass').val();
-        var oldCommandDesc = $('#command-description').val();
-        
-        $('#plugin-mainclass').val(oldPluginMainClass.replace(oldPluginName, newPluginName));
-        $('#command-description').val(oldCommandDesc.replace(oldPluginName, newPluginName));
-    }
-    oldPluginName = newPluginName;
-});
-
-$('#plugin-package').on('input', function() {
-    var newPackage = $('#plugin-package').val();
-    if (newPackage.length > 4) {
-        var oldShadowTarget = $('#depend-shadow-target').val();
-
-        $('#depend-shadow-target').val(oldShadowTarget.replace(oldPackage, newPackage));
-    }
-    oldPackage = newPackage;
-});
-
 // 组件版本
 const versions = {
     gradle: '8.5',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.6.6',
+    PluginBase: '1.7.0',
     // https://github.com/tr7zw/Item-NBT-API/releases
-    NBTAPI: '2.15.3-SNAPSHOT',
+    NBTAPI: '2.15.3',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
     PlaceholderAPI: '2.11.6',
     adventure: {
@@ -73,7 +48,7 @@ const versions = {
 const $plugin = {
     name: $v("#plugin-name"),
     version: $v("#plugin-version"),
-    package: $v("#plugin-package"),
+    packageName: $v("#plugin-package"),
     mainClass: $v("#plugin-mainclass"),
     apiVersion: $v("#plugin-api-version"),
     authors: $v("#plugin-authors"),
@@ -84,7 +59,27 @@ const $plugin = {
         dbReload: $v("#plugin-settings-db-reload"),
         ignore: $v("#plugin-settings-ignore"),
     },
+    modules: {
+        actions: $v("#plugin-modules-gui-actions"),
+        gui: $v("#plugin-modules-gui-actions"),
+        paper: $v("#plugin-modules-paper"),
+        misc: $v("#plugin-modules-misc"),
+        l10n: $v("#plugin-modules-l10n"),
+        commands: $v("#plugin-modules-commands"),
+        temporaryData: $v("#plugin-modules-temporary-data"),
+        join: () => {
+            let list = ['"library"']
+            for (let key in $plugin.modules) {
+                if (key == "join") continue
+                if ($plugin.modules[key].value()) {
+                    list.push('"' + key + '"')
+                }
+            }
+            return list.join(", ")
+        }
+    }
 }
+
 const $command = {
     register: $v("#command-register"),
     name: $v("#command-name"),
@@ -99,6 +94,7 @@ const $depend = {
     adventure: $v("#depend-adventure"),
     nbtapi: $v("#depend-nbtapi"),
     hikariCP: $v("#depend-hikaricp"),
+    resolver: $v("#depend-resolver-lite"),
 }
 const $other = {
     mythic: $v("#other-mythic"),
@@ -191,17 +187,27 @@ run/
 !gradle-wrapper.jar
 !libs/*.jar
 `);
-    const package = $plugin.package.value()
+    const packageName = $plugin.packageName.value()
     push('build.gradle.kts',
 `plugins {
     java
     ` + '`maven-publish`' + `
-    id ("com.gradleup.shadow") version "8.3.0"
+    id ("com.gradleup.shadow") version "8.3.0"`
++ ($depend.resolver.value() ? `
+    id ("com.github.gmazzo.buildconfig") version "5.6.7"` : ''
+) + `
 }
-
-group = "${package}"
+` + ($depend.resolver.value() ? `
+buildscript {
+    repositories.mavenCentral()
+    dependencies.classpath("top.mrxiaom:LibrariesResolver-Gradle:${versions.PluginBase}")
+}
+val base = top.mrxiaom.gradle.LibraryHelper(project)
+` : '') + `
+group = "${packageName}"
 version = "${$plugin.version.value()}"
 val targetJavaVersion = 8
+val pluginBaseModules = listOf(${$plugin.modules.join()})
 val pluginBaseVersion = "${versions.PluginBase}"
 val shadowGroup = "${$depend.shadowTarget.value()}"
 
@@ -234,20 +240,39 @@ dependencies {
 ) + ($other.playerPoints.value() ? `
     compileOnly("org.black_ixx:playerpoints:3.2.7")
 ` : '') + `
-` + ($depend.adventure.value() ? (`
+` + ($depend.adventure.value() ? ($depend.resolver.value() ? `
+    base.library("net.kyori:adventure-api:${versions.adventure.common}")
+    base.library("net.kyori:adventure-platform-bukkit:${versions.adventure.bukkit}")
+    base.library("net.kyori:adventure-text-minimessage:${versions.adventure.common}")
+    base.library("net.kyori:adventure-text-serializer-plain:${versions.adventure.common}")`
+    : `
     implementation("net.kyori:adventure-api:${versions.adventure.common}")
     implementation("net.kyori:adventure-platform-bukkit:${versions.adventure.bukkit}")
-    implementation("net.kyori:adventure-text-minimessage:${versions.adventure.common}")`) : ''
+    implementation("net.kyori:adventure-text-minimessage:${versions.adventure.common}")
+    implementation("net.kyori:adventure-text-serializer-plain:${versions.adventure.common}")`) : ''
 ) + ($depend.nbtapi.value() ? (`
     implementation("de.tr7zw:item-nbt-api:${versions.NBTAPI}")`) : ''
 ) + ($depend.hikariCP.value() ? `
     implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }` : ''
 ) + `
     // implementation("com.github.technicallycoded:FoliaLib:0.4.4") { isTransitive = false }
-    implementation("top.mrxiaom.pluginbase:library:$pluginBaseVersion")
-    implementation("top.mrxiaom.pluginbase:paper:$pluginBaseVersion")
-    // implementation("top.mrxiaom:LibrariesResolver:$pluginBaseVersion")
-}
+    for (artifact in pluginBaseModules) {
+        implementation("top.mrxiaom.pluginbase:$artifact:$pluginBaseVersion")
+    }
+` + ($depend.resolver.value() ? `
+    implementation("top.mrxiaom:LibrariesResolver-Lite:$pluginBaseVersion")` : ''
+) + `
+}`
++ ($depend.resolver.value() ? `
+buildConfig {
+    className("BuildConstants")
+    packageName("top.mrxiaom.sweet.locks")
+
+    base.doResolveLibraries()
+    buildConfigField("String", "VERSION", "\"\${project.version}\"")
+    buildConfigField("String[]", "RESOLVED_LIBRARIES", base.join())
+}` : ''
+) + `
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)
     if (JavaVersion.current() < javaVersion) {
@@ -262,7 +287,7 @@ tasks {
             "com.zaxxer.hikari" to "hikari",` : ''
 ) + ($depend.nbtapi.value() ? `
             "de.tr7zw.changeme.nbtapi" to "nbtapi",` : ''
-) + ($depend.adventure.value() ? `
+) + (($depend.adventure.value() && !$depend.resolver.value()) ? `
             "net.kyori" to "kyori",` : ''
 ) + `
             // "com.tcoded.folialib" to "folialib",
@@ -339,7 +364,7 @@ zipStorePath=wrapper/dists
     push("src/main/resources/plugin.yml",
 `name: ${$plugin.name.value()}
 version: '` + '${version}' + `'
-main: ${$plugin.package.value()}.${$plugin.mainClass.value()}
+main: ${$plugin.packageName.value()}.${$plugin.mainClass.value()}
 api-version: ${$plugin.apiVersion.value()}
 depend: ${depend}
 softdepend: ${softDepend}
@@ -388,8 +413,8 @@ sqlite:
 
     const addJavaSourceCode = function(className, content) {
         const i = className.lastIndexOf('.');
-        const realPackage = i < 0 ? package : (package + '.' + className.substring(0, i));
-        push('src/main/java/' + (package + '.' + className).replaceAll('.', '/') + '.java',
+        const realPackage = i < 0 ? packageName : (packageName + '.' + className.substring(0, i));
+        push('src/main/java/' + (packageName + '.' + className).replaceAll('.', '/') + '.java',
         `package ${realPackage};
 ` + content);
     };
@@ -402,10 +427,16 @@ import top.mrxiaom.pluginbase.BukkitPlugin;`
 + ($plugin.settings.vault.value() ? `
 import top.mrxiaom.pluginbase.economy.EnumEconomy;
 import top.mrxiaom.pluginbase.economy.IEconomy;` : ''
-) + `import top.mrxiaom.pluginbase.paper.PaperFactory;
+) + ($plugin.modules.paper.value() ? `
+import top.mrxiaom.pluginbase.paper.PaperFactory;` : ''
+) + `
 import top.mrxiaom.pluginbase.utils.inventory.InventoryFactory;
 import top.mrxiaom.pluginbase.utils.item.ItemEditor;
-import top.mrxiaom.pluginbase.utils.scheduler.FoliaLibScheduler;
+import top.mrxiaom.pluginbase.utils.scheduler.FoliaLibScheduler;`
++ ($plugin.settings.vault.value() ? `
+import top.mrxiaom.pluginbase.utils.ClassLoaderWrapper;
+import top.mrxiaom.pluginbase.resolver.DefaultLibraryResolver;` : ''
+) + `
 
 import org.jetbrains.annotations.NotNull;
 
@@ -413,8 +444,7 @@ public class ${mainClass} extends BukkitPlugin {
     public static ${mainClass} getInstance() {
         return (${mainClass}) BukkitPlugin.getInstance();
     }
-
-    public ${mainClass}() {
+    public ${mainClass}() throws Exception {
         super(options()
                 .bungee(${$plugin.settings.bungeecord.value()})
                 .adventure(${$depend.adventure.value()})
@@ -427,8 +457,22 @@ public class ${mainClass} extends BukkitPlugin {
 ) + `
         );
         // this.scheduler = new FoliaLibScheduler(this);
-    }
+` + ($depend.resolver.value() ? `
+        info("正在检查依赖库状态");
+        File librariesDir = ClassLoaderWrapper.isSupportLibraryLoader
+                ? new File("libraries")
+                : new File(this.getDataFolder(), "libraries");
+        DefaultLibraryResolver resolver = new DefaultLibraryResolver(getLogger(), librariesDir);
 
+        resolver.addResolvedLibrary(BuildConstants.RESOLVED_LIBRARIES);
+
+        List<URL> libraries = resolver.doResolve();
+        info("正在添加 " + libraries.size() + " 个依赖库到类加载器");
+        for (URL library : libraries) {
+            this.classLoader.addURL(library);
+        }` : '') + `
+    }
+` + ($plugin.modules.paper.value() ? `
     @Override
     public @NotNull ItemEditor initItemEditor() {
         return PaperFactory.createItemEditor();
@@ -438,28 +482,27 @@ public class ${mainClass} extends BukkitPlugin {
     public @NotNull InventoryFactory initInventoryFactory() {
         return PaperFactory.createInventoryFactory();
     }
-` + ($plugin.settings.vault.value() ? `
+` : '') + ($plugin.settings.vault.value() ? `
     @NotNull
     public IEconomy getEconomy() {
         return options.economy();
-    }` : '') + ($depend.nbtapi.value() ? `
-
+    }
+` : '') + ($depend.nbtapi.value() ? `
     @Override
     protected void beforeLoad() {
         MinecraftVersion.replaceLogger(getLogger());
         MinecraftVersion.disableUpdateCheck();
         MinecraftVersion.disableBStats();
         MinecraftVersion.getVersion();
-    }` : '') + ($plugin.settings.database.value() ? `
-
+    }
+` : '') + ($plugin.settings.database.value() ? `
     @Override
     protected void beforeEnable() {
         options.registerDatabase(
                 // 在这里添加数据库 (如果需要的话)
         );
-    }` : ''
-) + `
-
+    }
+` : '') + `
     @Override
     protected void afterEnable() {
         getLogger().info("${$plugin.name.value()} 加载完毕");
@@ -467,7 +510,7 @@ public class ${mainClass} extends BukkitPlugin {
 }
 `);
     addJavaSourceCode("func.AbstractModule", `
-import ${package}.${mainClass};
+import ${packageName}.${mainClass};
 
 public abstract class AbstractModule extends top.mrxiaom.pluginbase.func.AbstractModule<${mainClass}> {
     public AbstractModule(${mainClass} plugin) {
@@ -476,7 +519,7 @@ public abstract class AbstractModule extends top.mrxiaom.pluginbase.func.Abstrac
 }
 `);
     addJavaSourceCode("func.AbstractPluginHolder", `
-import ${package}.${mainClass};
+import ${packageName}.${mainClass};
 
 @SuppressWarnings({"unused"})
 public abstract class AbstractPluginHolder extends top.mrxiaom.pluginbase.func.AbstractPluginHolder<${mainClass}> {
@@ -500,8 +543,8 @@ import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.pluginbase.func.AutoRegister;
-import ${package}.${mainClass};
-import ${package}.func.AbstractModule;
+import ${packageName}.${mainClass};
+import ${packageName}.func.AbstractModule;
 
 import java.util.*;
 

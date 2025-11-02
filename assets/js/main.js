@@ -269,7 +269,7 @@ buildConfig {
     packageName("${packageName}")
 
     base.doResolveLibraries()
-    buildConfigField("String", "VERSION", "\${project.version}")
+    buildConfigField("String", "VERSION", "\\"\${project.version}\\"")
     buildConfigField("String[]", "RESOLVED_LIBRARIES", base.join())
 }` : ''
 ) + `

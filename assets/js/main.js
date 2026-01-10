@@ -32,9 +32,9 @@ function $v(selector) {
 const versions = {
     gradle: '8.5',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.7.0',
+    PluginBase: '1.7.3',
     // https://github.com/tr7zw/Item-NBT-API/releases
-    NBTAPI: '2.15.3',
+    NBTAPI: '2.15.5',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
     PlaceholderAPI: '2.11.6',
     adventure: {
@@ -68,11 +68,11 @@ const $plugin = {
         commands: $v("#plugin-modules-commands"),
         temporaryData: $v("#plugin-modules-temporary-data"),
         join: () => {
-            let list = ['"library"']
+            let list = ['library']
             for (let key in $plugin.modules) {
                 if (key == "join") continue
                 if ($plugin.modules[key].value()) {
-                    list.push('"' + key + '"')
+                    list.push(key)
                 }
             }
             return list.join(", ")
@@ -207,8 +207,7 @@ val base = top.mrxiaom.gradle.LibraryHelper(project)
 group = "${packageName}"
 version = "${$plugin.version.value()}"
 val targetJavaVersion = 8
-val pluginBaseModules = listOf(${$plugin.modules.join()})
-val pluginBaseVersion = "${versions.PluginBase}"
+val pluginBaseModules = base.modules.run { listOf(${$plugin.modules.join()}) }
 val shadowGroup = "${$depend.shadowTarget.value()}"
 
 repositories {
@@ -257,10 +256,10 @@ dependencies {
 ) + `
     implementation("com.github.technicallycoded:FoliaLib:0.4.4") { isTransitive = false }
     for (artifact in pluginBaseModules) {
-        implementation("top.mrxiaom.pluginbase:$artifact:$pluginBaseVersion")
+        implementation("$artifact")
     }
 ` + ($depend.resolver.value() ? `
-    implementation("top.mrxiaom:LibrariesResolver-Lite:$pluginBaseVersion")` : ''
+    implementation(base.resolver.lite)` : ''
 ) + `
 }`
 + ($depend.resolver.value() ? `
@@ -436,7 +435,9 @@ import top.mrxiaom.pluginbase.utils.item.ItemEditor;
 import top.mrxiaom.pluginbase.utils.scheduler.FoliaLibScheduler;`
 + ($depend.resolver.value() ? `
 import top.mrxiaom.pluginbase.utils.ClassLoaderWrapper;
+import top.mrxiaom.pluginbase.utils.ConfigUtils;
 import top.mrxiaom.pluginbase.resolver.DefaultLibraryResolver;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.net.URL;
@@ -469,6 +470,10 @@ public class ${mainClass} extends BukkitPlugin {
                 : new File(this.getDataFolder(), "libraries");
         DefaultLibraryResolver resolver = new DefaultLibraryResolver(getLogger(), librariesDir);
 
+        YamlConfiguration overrideLibraries = ConfigUtils.load(resolve("./.override-libraries.yml"));
+        for (String key : overrideLibraries.getKeys(false)) {
+            resolver.getStartsReplacer().put(key, overrideLibraries.getString(key));
+        }
         resolver.addResolvedLibrary(BuildConstants.RESOLVED_LIBRARIES);
 
         List<URL> libraries = resolver.doResolve();

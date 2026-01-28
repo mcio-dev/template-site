@@ -32,7 +32,7 @@ function $v(selector) {
 const versions = {
     gradle: '8.5',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.7.3',
+    PluginBase: '1.7.4',
     // https://github.com/tr7zw/Item-NBT-API/releases
     NBTAPI: '2.15.5',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases

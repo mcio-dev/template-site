@@ -257,8 +257,8 @@ dependencies {
     implementation("com.github.technicallycoded:FoliaLib:0.4.4") { isTransitive = false }
     for (artifact in pluginBaseModules) {
         implementation("$artifact")
-    }
-` + ($depend.resolver.value() ? `
+    }`
+  + ($depend.resolver.value() ? `
     implementation(base.resolver.lite)` : ''
 ) + `
 }`
@@ -369,6 +369,11 @@ depend: ${depend}
 softdepend: ${softDepend}
 authors: [ ${$plugin.authors.value()} ]
 folia-supported: true`
++ ($depend.resolver.value() ? (`
+libraries:
+  - "org.jetbrains:annotations:24.0.0"`
+) : ''
+)
 + ($command.register.value() ? (`
 commands:
   ${$command.name.value()}:

@@ -590,12 +590,8 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     }
 
     public List<String> startsWith(Collection<String> list, String s) {
-        return startsWith(null, list, s);
-    }
-    public List<String> startsWith(String[] addition, Collection<String> list, String s) {
         String s1 = s.toLowerCase();
         List<String> stringList = new ArrayList<>(list);
-        if (addition != null) stringList.addAll(0, Lists.newArrayList(addition));
         stringList.removeIf(it -> !it.toLowerCase().startsWith(s1));
         return stringList;
     }

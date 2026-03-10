@@ -277,6 +277,8 @@ java {
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
     }
+    withSourcesJar()
+    withJavadocJar()
 }
 tasks {
     shadowJar {
@@ -307,6 +309,17 @@ tasks {
         options.encoding = "UTF-8"
         if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible) {
             options.release.set(targetJavaVersion)
+        }
+    }
+    javadoc {
+        (options as StandardJavadocDocletOptions).apply {
+            links("https://hub.spigotmc.org/javadocs/spigot/")
+
+            locale("zh_CN")
+            encoding("UTF-8")
+            docEncoding("UTF-8")
+            addBooleanOption("keywords", true)
+            addBooleanOption("Xdoclint:none", true)
         }
     }
     processResources {

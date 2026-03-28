@@ -30,9 +30,11 @@ function $v(selector) {
 
 // 组件版本
 const versions = {
-    gradle: '8.5',
+    gradle: '9.1.0',
+    // https://github.com/GradleUp/shadow/releases
+    shadowJar: '9.3.0',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.7.5',
+    PluginBase: '1.7.13',
     // https://github.com/tr7zw/Item-NBT-API/releases
     NBTAPI: '2.15.5',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
@@ -188,22 +190,23 @@ run/
 !libs/*.jar
 `);
     const packageName = $plugin.packageName.value()
+    ///////////////////////////////////////////////////////////////////
     push('build.gradle.kts',
 `plugins {
     java
     ` + '`maven-publish`' + `
-    id ("com.gradleup.shadow") version "8.3.0"`
+    id ("com.gradleup.shadow") version "${versions.shadowJar}"`
 + ($depend.resolver.value() ? `
     id ("com.github.gmazzo.buildconfig") version "5.6.7"` : ''
 ) + `
 }
-` + ($depend.resolver.value() ? `
+
 buildscript {
     repositories.mavenCentral()
     dependencies.classpath("top.mrxiaom:LibrariesResolver-Gradle:${versions.PluginBase}")
 }
 val base = top.mrxiaom.gradle.LibraryHelper(project)
-` : '') + `
+
 group = "${packageName}"
 version = "${$plugin.version.value()}"
 val targetJavaVersion = 8
@@ -273,6 +276,7 @@ buildConfig {
 }` : ''
 ) + `
 java {
+    disableAutoTargetJvm()
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
@@ -282,6 +286,7 @@ java {
 }
 tasks {
     shadowJar {
+        configurations.add(project.configurations.runtimeClasspath.get())
         mapOf(
             "top.mrxiaom.pluginbase" to "base",`
 + ($depend.hikariCP.value() ? `
@@ -296,7 +301,7 @@ tasks {
             relocate(original, "$shadowGroup.$target")
         }
     }
-    val copyTask = create<Copy>("copyBuildArtifact") {
+    val copyTask = this.register<Copy>("copyBuildArtifact") {
         dependsOn(shadowJar)
         from(shadowJar.get().outputs)
         rename { "\${project.name}-$version.jar" }
@@ -325,7 +330,10 @@ tasks {
     processResources {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
         from(sourceSets.main.get().resources.srcDirs) {
-            expand(mapOf("version" to version))
+            expand(mapOf(
+                "version" to version,
+                "libraries" to base.addedLibraries.joinToString("\\"\\n  - \\""),
+            ))
             include("plugin.yml")
         }
     }
@@ -344,6 +352,7 @@ publishing {
     }
 }
 `);
+    ///////////////////////////////////////////////////////////////////
     push("gradle/wrapper/gradle-wrapper.properties",
 `distributionBase=GRADLE_USER_HOME
 distributionPath=wrapper/dists
@@ -376,6 +385,7 @@ zipStorePath=wrapper/dists
         softDepend += "[]";
     }
 
+    ///////////////////////////////////////////////////////////////////
     push("src/main/resources/plugin.yml",
 `name: ${$plugin.name.value()}
 version: '` + '${version}' + `'
@@ -387,7 +397,7 @@ authors: [ ${$plugin.authors.value()} ]
 folia-supported: true`
 + ($depend.resolver.value() ? (`
 libraries:
-  - "org.jetbrains:annotations:24.0.0"`
+  - "\${libraries}"`
 ) : ''
 )
 + ($command.register.value() ? (`
@@ -399,6 +409,7 @@ commands:
   )) : ''
 ) + `
 `);
+    ///////////////////////////////////////////////////////////////////
     if ($plugin.settings.database.value()) {
         push("src/main/resources/database.yml",
 `# 添加 goto 选项，使用指定路径的配置文件作为数据库配置
@@ -440,6 +451,7 @@ sqlite:
 ` + content);
     };
 
+    ///////////////////////////////////////////////////////////////////
     const mainClass = $plugin.mainClass.value();
     addJavaSourceCode(mainClass,
 ($depend.nbtapi.value() ? `
@@ -485,22 +497,27 @@ public class ${mainClass} extends BukkitPlugin {
         );
         this.scheduler = new FoliaLibScheduler(this);
 ` + ($depend.resolver.value() ? `
-        info("正在检查依赖库状态");
-        File librariesDir = ClassLoaderWrapper.isSupportLibraryLoader
-                ? new File("libraries")
-                : new File(this.getDataFolder(), "libraries");
-        DefaultLibraryResolver resolver = new DefaultLibraryResolver(getLogger(), librariesDir);
+        try {
+            //noinspection ResultOfMethodCallIgnored
+            getDescription().getLibraries();
+        } catch (LinkageError ignored) {
+            info("正在检查依赖库状态");
+            File librariesDir = ClassLoaderWrapper.isSupportLibraryLoader
+                    ? new File("libraries")
+                    : new File(this.getDataFolder(), "libraries");
+            DefaultLibraryResolver resolver = new DefaultLibraryResolver(getLogger(), librariesDir);
 
-        YamlConfiguration overrideLibraries = ConfigUtils.load(resolve("./.override-libraries.yml"));
-        for (String key : overrideLibraries.getKeys(false)) {
-            resolver.getStartsReplacer().put(key, overrideLibraries.getString(key));
-        }
-        resolver.addResolvedLibrary(BuildConstants.RESOLVED_LIBRARIES);
+            YamlConfiguration overrideLibraries = ConfigUtils.load(resolve("./.override-libraries.yml"));
+            for (String key : overrideLibraries.getKeys(false)) {
+                resolver.getStartsReplacer().put(key, overrideLibraries.getString(key));
+            }
+            resolver.addResolvedLibrary(BuildConstants.RESOLVED_LIBRARIES);
 
-        List<URL> libraries = resolver.doResolve();
-        info("正在添加 " + libraries.size() + " 个依赖库到类加载器");
-        for (URL library : libraries) {
-            this.classLoader.addURL(library);
+            List<URL> libraries = resolver.doResolve();
+            info("正在添加 " + libraries.size() + " 个依赖库到类加载器");
+            for (URL library : libraries) {
+                this.classLoader.addURL(library);
+            }
         }` : '') + `
     }
 ` + ($plugin.modules.paper.value() ? `
@@ -540,6 +557,7 @@ public class ${mainClass} extends BukkitPlugin {
     }
 }
 `);
+    ///////////////////////////////////////////////////////////////////
     addJavaSourceCode("func.AbstractModule", `
 import ${packageName}.${mainClass};
 
@@ -549,6 +567,7 @@ public abstract class AbstractModule extends top.mrxiaom.pluginbase.func.Abstrac
     }
 }
 `);
+    ///////////////////////////////////////////////////////////////////
     addJavaSourceCode("func.AbstractPluginHolder", `
 import ${packageName}.${mainClass};
 
@@ -563,9 +582,9 @@ public abstract class AbstractPluginHolder extends top.mrxiaom.pluginbase.func.A
     }
 }
 `);
+    ///////////////////////////////////////////////////////////////////
     if ($command.register.value()) {
         addJavaSourceCode("commands.CommandMain", `
-import com.google.common.collect.Lists;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -595,12 +614,14 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
         return true;
     }
 
-    private static final List<String> listArg0 = Lists.newArrayList();
-    private static final List<String> listOpArg0 = Lists.newArrayList("reload");
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String alias, @NotNull String[] args) {
         if (args.length == 1) {
-            return startsWith(sender.isOp() ? listOpArg0 : listArg0, args[0]);
+            List<String> list = new ArrayList<>();
+            if (sender.isOp()) {
+                list.add("reload");
+            }
+            return startsWith(list, args[0]);
         }
         return Collections.emptyList();
     }
@@ -614,6 +635,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
 }
 `);
     }
+    ///////////////////////////////////////////////////////////////////
 }
 
 $start.onclick = async () => {
@@ -622,13 +644,16 @@ $start.onclick = async () => {
     try {
         const pluginName = $plugin.name.value()
         let remotes = [
+            // 需要下载的资源
             { name: "gradle/wrapper/gradle-wrapper.jar", url: "https://bukkit.mcio.dev/assets/project/gradle/wrapper/gradle-wrapper.jar"  },
             { name: "gradlew", url: "https://bukkit.mcio.dev/assets/project/gradlew" },
             { name: "gradlew.bat", url: "https://bukkit.mcio.dev/assets/project/gradlew.bat" },
         ], plains = [
-            { name: "settings.gradle.kts", content: "rootProject.name = \"" + pluginName + "\"\n" },
+            // 生成的文本资源
+            { name: "settings.gradle.kts", content: `rootProject.name = \"${pluginName}\"\n` },
         ]
 
+        // 其它需要生成的代码资源
         generateCode(plains)
 
         const fileStream = streamSaver.createWriteStream(pluginName + '.zip')

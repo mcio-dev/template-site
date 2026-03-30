@@ -36,7 +36,7 @@ const versions = {
     // https://github.com/MrXiaoM/PluginBase/releases
     PluginBase: '1.7.13',
     // https://github.com/tr7zw/Item-NBT-API/releases
-    NBTAPI: '2.15.5',
+    NBTAPI: '2.15.6',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
     PlaceholderAPI: '2.11.6',
     adventure: {

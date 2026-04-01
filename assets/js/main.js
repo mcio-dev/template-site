@@ -301,10 +301,11 @@ tasks {
             relocate(original, "$shadowGroup.$target")
         }
     }
+    val jarName = "\${project.name}-\${project.version}.jar"
     val copyTask = this.register<Copy>("copyBuildArtifact") {
         dependsOn(shadowJar)
         from(shadowJar.get().outputs)
-        rename { "\${project.name}-$version.jar" }
+        rename { jarName }
         into(rootProject.file("out"))
     }
     build {

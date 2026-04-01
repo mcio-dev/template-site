@@ -34,11 +34,11 @@ const versions = {
     // https://github.com/GradleUp/shadow/releases
     shadowJar: '9.3.0',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.7.13',
+    PluginBase: '1.7.14',
     // https://github.com/tr7zw/Item-NBT-API/releases
     NBTAPI: '2.15.6',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
-    PlaceholderAPI: '2.11.6',
+    PlaceholderAPI: '2.12.2',
     adventure: {
         // https://github.com/KyoriPowered/adventure/releases
         common: '4.22.0',
@@ -598,6 +598,8 @@ import ${packageName}.func.AbstractModule;
 
 import java.util.*;
 
+import static top.mrxiaom.pluginbase.utils.CollectionUtils.startsWith;
+
 @AutoRegister
 public class CommandMain extends AbstractModule implements CommandExecutor, TabCompleter, Listener {
     public CommandMain(${mainClass} plugin) {
@@ -621,16 +623,9 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
             if (sender.isOp()) {
                 list.add("reload");
             }
-            return startsWith(list, args[0]);
+            return startsWith(args[0], list);
         }
         return Collections.emptyList();
-    }
-
-    public List<String> startsWith(Collection<String> list, String s) {
-        String s1 = s.toLowerCase();
-        List<String> stringList = new ArrayList<>(list);
-        stringList.removeIf(it -> !it.toLowerCase().startsWith(s1));
-        return stringList;
     }
 }
 `);

@@ -34,7 +34,7 @@ const versions = {
     // https://github.com/GradleUp/shadow/releases
     shadowJar: '9.3.0',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.7.14',
+    PluginBase: '1.7.15',
     // https://github.com/tr7zw/Item-NBT-API/releases
     NBTAPI: '2.15.6',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
@@ -244,13 +244,13 @@ dependencies {
 ` : '') + `
 ` + ($depend.adventure.value() ? ($depend.resolver.value() ? `
     base.library("net.kyori:adventure-api:${versions.adventure.common}")
-    base.library("net.kyori:adventure-platform-bukkit:${versions.adventure.bukkit}")
     base.library("net.kyori:adventure-text-minimessage:${versions.adventure.common}")
+    base.library("net.kyori:adventure-text-serializer-gson:${versions.adventure.common}")
     base.library("net.kyori:adventure-text-serializer-plain:${versions.adventure.common}")`
     : `
     implementation("net.kyori:adventure-api:${versions.adventure.common}")
-    implementation("net.kyori:adventure-platform-bukkit:${versions.adventure.bukkit}")
     implementation("net.kyori:adventure-text-minimessage:${versions.adventure.common}")
+    implementation("net.kyori:adventure-text-serializer-gson:${versions.adventure.common}")
     implementation("net.kyori:adventure-text-serializer-plain:${versions.adventure.common}")`) : ''
 ) + ($depend.nbtapi.value() ? (`
     implementation("de.tr7zw:item-nbt-api:${versions.NBTAPI}")`) : ''
@@ -275,15 +275,10 @@ buildConfig {
     buildConfigField("String[]", "RESOLVED_LIBRARIES", base.join())
 }` : ''
 ) + `
-java {
-    disableAutoTargetJvm()
-    val javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
-    }
-    withSourcesJar()
-    withJavadocJar()
-}
+
+top.mrxiaom.gradle.LibraryHelper.initJava(project, base, targetJavaVersion, true)
+top.mrxiaom.gradle.LibraryHelper.initPublishing(project)
+
 tasks {
     shadowJar {
         configurations.add(project.configurations.runtimeClasspath.get())
@@ -299,56 +294,6 @@ tasks {
             "com.tcoded.folialib" to "folialib",
         ).forEach { (original, target) ->
             relocate(original, "$shadowGroup.$target")
-        }
-    }
-    val jarName = "\${project.name}-\${project.version}.jar"
-    val copyTask = this.register<Copy>("copyBuildArtifact") {
-        dependsOn(shadowJar)
-        from(shadowJar.get().outputs)
-        rename { jarName }
-        into(rootProject.file("out"))
-    }
-    build {
-        dependsOn(copyTask)
-    }
-    withType<JavaCompile>().configureEach {
-        options.encoding = "UTF-8"
-        if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible) {
-            options.release.set(targetJavaVersion)
-        }
-    }
-    javadoc {
-        (options as StandardJavadocDocletOptions).apply {
-            links("https://hub.spigotmc.org/javadocs/spigot/")
-
-            locale("zh_CN")
-            encoding("UTF-8")
-            docEncoding("UTF-8")
-            addBooleanOption("keywords", true)
-            addBooleanOption("Xdoclint:none", true)
-        }
-    }
-    processResources {
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-        from(sourceSets.main.get().resources.srcDirs) {
-            expand(mapOf(
-                "version" to version,
-                "libraries" to base.addedLibraries.joinToString("\\"\\n  - \\""),
-            ))
-            include("plugin.yml")
-        }
-    }
-}
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = project.group.toString()
-            artifactId = rootProject.name
-            version = project.version.toString()
-
-            artifact(tasks["shadowJar"]).classifier = null
-            artifact(tasks["sourcesJar"])
-            artifact(tasks["javadocJar"])
         }
     }
 }
@@ -397,8 +342,7 @@ softdepend: ${softDepend}
 authors: [ ${$plugin.authors.value()} ]
 folia-supported: true`
 + ($depend.resolver.value() ? (`
-libraries:
-  - "\${libraries}"`
+# PluginBase Libraries \${libraries_config}`
 ) : ''
 )
 + ($command.register.value() ? (`
@@ -584,6 +528,9 @@ public abstract class AbstractPluginHolder extends top.mrxiaom.pluginbase.func.A
 }
 `);
     ///////////////////////////////////////////////////////////////////
+    const reload_permission = $plugin.name.value().indexOf('Sweet') == 0
+                    ? ('sweet.' + $plugin.name.value().substring(5).toLowerCase() + '.reload')
+                    : ($plugin.name.value().toLowerCase() + '.reload')
     if ($command.register.value()) {
         addJavaSourceCode("commands.CommandMain", `
 import org.bukkit.command.Command;
@@ -610,7 +557,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
-        if (args.length == 1 && "reload".equalsIgnoreCase(args[0]) && sender.isOp()) {
+        if (args.length == 1 && "reload".equalsIgnoreCase(args[0]) && sender.hasPermission("${reload_permission}")) {
             plugin.reloadConfig();
             return t(sender, "&a配置文件已重载");
         }

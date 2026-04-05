@@ -34,7 +34,7 @@ const versions = {
     // https://github.com/GradleUp/shadow/releases
     shadowJar: '9.3.0',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.7.15',
+    PluginBase: '1.7.16',
     // https://github.com/tr7zw/Item-NBT-API/releases
     NBTAPI: '2.15.6',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases

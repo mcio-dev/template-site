@@ -34,9 +34,7 @@ const versions = {
     // https://github.com/GradleUp/shadow/releases
     shadowJar: '9.3.0',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.7.16',
-    // https://github.com/tr7zw/Item-NBT-API/releases
-    NBTAPI: '2.15.7',
+    PluginBase: '1.7.17',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
     PlaceholderAPI: '2.12.2',
     adventure: {
@@ -228,7 +226,7 @@ repositories {
 dependencies {
     compileOnly("` + ($depend.paper.value() ? "io.papermc.paper:paper-api" : "org.spigotmc:spigot-api") + `:${$depend.minecraft.value()}-R0.1-SNAPSHOT")
     // compileOnly("org.spigotmc:spigot:${$depend.minecraft.value()}") // NMS
-    compileOnly("org.jetbrains:annotations:24.0.0")
+    compileOnly(base.depend.annotations)
 `+ ($plugin.settings.vault.value() ? `
     compileOnly("net.milkbowl.vault:VaultAPI:1.7")` : ''
 ) + `
@@ -251,9 +249,9 @@ dependencies {
     implementation("net.kyori:adventure-text-serializer-gson:${versions.adventure.common}")
     implementation("net.kyori:adventure-text-serializer-plain:${versions.adventure.common}")`) : ''
 ) + ($depend.nbtapi.value() ? (`
-    implementation("de.tr7zw:item-nbt-api:${versions.NBTAPI}")`) : ''
+    implementation(base.depend.nbtapi)`) : ''
 ) + ($depend.hikariCP.value() ? `
-    implementation("com.zaxxer:HikariCP:4.0.3") { isTransitive = false }` : ''
+    implementation(base.depend.HikariCP) { isTransitive = false }` : ''
 ) + `
     implementation("com.github.technicallycoded:FoliaLib:0.4.4") { isTransitive = false }
     for (artifact in pluginBaseModules) {

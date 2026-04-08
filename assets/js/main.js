@@ -36,14 +36,12 @@ const versions = {
     // https://github.com/MrXiaoM/PluginBase/releases
     PluginBase: '1.7.16',
     // https://github.com/tr7zw/Item-NBT-API/releases
-    NBTAPI: '2.15.6',
+    NBTAPI: '2.15.7',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
     PlaceholderAPI: '2.12.2',
     adventure: {
         // https://github.com/KyoriPowered/adventure/releases
         common: '4.22.0',
-        // https://github.com/KyoriPowered/adventure-platform/releases
-        bukkit: '4.4.0'
     },
 }
 

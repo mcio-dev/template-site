@@ -34,7 +34,7 @@ const versions = {
     // https://github.com/GradleUp/shadow/releases
     shadowJar: '9.3.0',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.7.17',
+    PluginBase: '1.7.18',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
     PlaceholderAPI: '2.12.2',
     adventure: {
@@ -188,7 +188,9 @@ run/
     const packageName = $plugin.packageName.value()
     ///////////////////////////////////////////////////////////////////
     push('build.gradle.kts',
-`plugins {
+`import top.mrxiaom.gradle.LibraryHelper
+
+plugins {
     java
     ` + '`maven-publish`' + `
     id ("com.gradleup.shadow") version "${versions.shadowJar}"`
@@ -201,7 +203,7 @@ buildscript {
     repositories.mavenCentral()
     dependencies.classpath("top.mrxiaom:LibrariesResolver-Gradle:${versions.PluginBase}")
 }
-val base = top.mrxiaom.gradle.LibraryHelper(project)
+val base = LibraryHelper(project)
 
 group = "${packageName}"
 version = "${$plugin.version.value()}"
@@ -239,15 +241,9 @@ dependencies {
     compileOnly("org.black_ixx:playerpoints:3.2.7")
 ` : '') + `
 ` + ($depend.adventure.value() ? ($depend.resolver.value() ? `
-    base.library("net.kyori:adventure-api:${versions.adventure.common}")
-    base.library("net.kyori:adventure-text-minimessage:${versions.adventure.common}")
-    base.library("net.kyori:adventure-text-serializer-gson:${versions.adventure.common}")
-    base.library("net.kyori:adventure-text-serializer-plain:${versions.adventure.common}")`
+    base.library(LibraryHelper.adventure("${versions.adventure.common}"))`
     : `
-    implementation("net.kyori:adventure-api:${versions.adventure.common}")
-    implementation("net.kyori:adventure-text-minimessage:${versions.adventure.common}")
-    implementation("net.kyori:adventure-text-serializer-gson:${versions.adventure.common}")
-    implementation("net.kyori:adventure-text-serializer-plain:${versions.adventure.common}")`) : ''
+    LibraryHelper.adventure("${versions.adventure.common}").forEach(::implementation)`) : ''
 ) + ($depend.nbtapi.value() ? (`
     implementation(base.depend.nbtapi)`) : ''
 ) + ($depend.hikariCP.value() ? `
@@ -272,8 +268,8 @@ buildConfig {
 }` : ''
 ) + `
 
-top.mrxiaom.gradle.LibraryHelper.initJava(project, base, targetJavaVersion, true)
-top.mrxiaom.gradle.LibraryHelper.initPublishing(project)
+LibraryHelper.initJava(project, base, targetJavaVersion, true)
+LibraryHelper.initPublishing(project)
 
 tasks {
     shadowJar {

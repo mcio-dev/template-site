@@ -14,6 +14,21 @@
     });
 })(jQuery);
 
+// 组件版本
+const versions = {
+    gradle: '9.1.0',
+    // https://github.com/GradleUp/shadow/releases
+    shadowJar: '9.3.0',
+    // https://github.com/MrXiaoM/PluginBase/releases
+    PluginBase: '1.7.19',
+    // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
+    PlaceholderAPI: '2.12.2',
+    adventure: {
+        // https://github.com/KyoriPowered/adventure/releases
+        common: '4.22.0',
+    },
+}
+
 streamSaver.mitm = "https://bukkit.mcio.dev/assets/res/mitm.html?version=2.0.0"
 
 function $v(selector) {
@@ -26,21 +41,6 @@ function $v(selector) {
         }
     }
     return element
-}
-
-// 组件版本
-const versions = {
-    gradle: '9.1.0',
-    // https://github.com/GradleUp/shadow/releases
-    shadowJar: '9.3.0',
-    // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.7.18',
-    // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
-    PlaceholderAPI: '2.12.2',
-    adventure: {
-        // https://github.com/KyoriPowered/adventure/releases
-        common: '4.22.0',
-    },
 }
 
 const $plugin = {

@@ -23,6 +23,8 @@ const versions = {
     PluginBase: '1.7.20',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
     PlaceholderAPI: '2.12.2',
+    // https://modrinth.com/plugin/playerpoints/versions
+    PlayerPoints: '3.3.4',
     adventure: {
         // https://github.com/KyoriPowered/adventure/releases
         common: '4.22.0',
@@ -238,7 +240,7 @@ dependencies {
     compileOnly("io.lumine:Mythic:5.6.2")
     compileOnly("io.lumine:LumineUtils:1.20-SNAPSHOT")` : ''
 ) + ($other.playerPoints.value() ? `
-    compileOnly("org.black_ixx:playerpoints:3.2.7")
+    compileOnly("org.black_ixx:playerpoints:${versions.PlayerPoints}")
 ` : '') + `
 ` + ($depend.adventure.value() ? ($depend.resolver.value() ? `
     base.library(LibraryHelper.adventure("${versions.adventure.common}"))`

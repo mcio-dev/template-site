@@ -277,6 +277,7 @@ LibraryHelper.initPublishing(project)
 
 tasks {
     shadowJar {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
         configurations.add(project.configurations.runtimeClasspath.get())
         mapOf(
             "top.mrxiaom.pluginbase" to "base",`
@@ -291,6 +292,7 @@ tasks {
         ).forEach { (original, target) ->
             relocate(original, "$shadowGroup.$target")
         }
+        append("META-INF/PluginBaseHolders")
     }
 }
 `);

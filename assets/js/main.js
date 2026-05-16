@@ -20,7 +20,7 @@ const versions = {
     // https://github.com/GradleUp/shadow/releases
     shadowJar: '9.3.0',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.7.20',
+    PluginBase: '1.7.21',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
     PlaceholderAPI: '2.12.2',
     // https://modrinth.com/plugin/playerpoints/versions
@@ -246,7 +246,9 @@ dependencies {
     base.library(LibraryHelper.adventure("${versions.adventure.common}"))`
     : `
     LibraryHelper.adventure("${versions.adventure.common}").forEach(::implementation)`) : ''
-) + ($depend.nbtapi.value() ? (`
+) + `
+    base.collectPluginHolders()
+` + ($depend.nbtapi.value() ? (`
     implementation(base.depend.nbtapi)`) : ''
 ) + ($depend.hikariCP.value() ? `
     implementation(base.depend.HikariCP) { isTransitive = false }` : ''
@@ -314,7 +316,7 @@ zipStorePath=wrapper/dists
             depend += "\n  - " + dependList[i];
         }
     } else {
-        depend += "[]";
+        depend = "[]";
     }
     var softDepend = "";
     if (softDependList.length > 0) {
@@ -322,7 +324,7 @@ zipStorePath=wrapper/dists
             softDepend += "\n  - " + softDependList[i];
         }
     } else {
-        softDepend += "[]";
+        softDepend = "[]";
     }
 
     ///////////////////////////////////////////////////////////////////

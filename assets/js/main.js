@@ -20,14 +20,14 @@ const versions = {
     // https://github.com/GradleUp/shadow/releases
     shadowJar: '9.3.0',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.7.21',
+    PluginBase: '1.7.22',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
     PlaceholderAPI: '2.12.2',
     // https://modrinth.com/plugin/playerpoints/versions
     PlayerPoints: '3.3.4',
     adventure: {
         // https://github.com/KyoriPowered/adventure/releases
-        common: '4.22.0',
+        common: '4.25.0',
     },
 }
 

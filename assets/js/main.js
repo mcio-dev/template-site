@@ -187,6 +187,9 @@ run/
 !gradle-wrapper.jar
 !libs/*.jar
 `);
+    if ($depend.nbtapi.value()) {
+        push('src/main/resources/META-INF/.mojang-mapped', '');
+    }
     const packageName = $plugin.packageName.value()
     ///////////////////////////////////////////////////////////////////
     push('build.gradle.kts',

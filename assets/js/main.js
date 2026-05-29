@@ -192,6 +192,12 @@ run/
     }
     const packageName = $plugin.packageName.value()
     ///////////////////////////////////////////////////////////////////
+    push('grade.properties',
+`
+group = ${packageName}
+version = ${$plugin.version.value()}
+`)
+    ///////////////////////////////////////////////////////////////////
     push('build.gradle.kts',
 `import top.mrxiaom.gradle.LibraryHelper
 
@@ -210,8 +216,9 @@ buildscript {
 }
 val base = LibraryHelper(project)
 
-group = "${packageName}"
-version = "${$plugin.version.value()}"
+println("Group:   $group")
+println("Version: $version")
+
 val targetJavaVersion = 8
 val pluginBaseModules = base.modules.run { listOf(${$plugin.modules.join()}) }
 val shadowGroup = "${$depend.shadowTarget.value()}"

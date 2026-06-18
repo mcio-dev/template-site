@@ -192,7 +192,7 @@ run/
     }
     const packageName = $plugin.packageName.value()
     ///////////////////////////////////////////////////////////////////
-    push('grade.properties',
+    push('gradle.properties',
 `
 group = ${packageName}
 version = ${$plugin.version.value()}

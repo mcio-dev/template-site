@@ -287,6 +287,11 @@ LibraryHelper.initPublishing(project)
 
 tasks {
     shadowJar {
+        // manifest {
+        //     attributes(
+        //         "paperweight-mappings-namespace" to "mojang"
+        //     )
+        // }
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
         configurations.add(project.configurations.runtimeClasspath.get())
         mapOf(

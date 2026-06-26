@@ -20,7 +20,7 @@ const versions = {
     // https://github.com/GradleUp/shadow/releases
     shadowJar: '9.3.0',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.7.25',
+    PluginBase: '1.7.27',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
     PlaceholderAPI: '2.12.2',
     // https://modrinth.com/plugin/playerpoints/versions
@@ -565,7 +565,14 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
-        if (args.length == 1 && "reload".equalsIgnoreCase(args[0]) && sender.hasPermission("${reload_permission}")) {
+        if (args.length >= 1 && "reload".equalsIgnoreCase(args[0]) && sender.hasPermission("${reload_permission}")) {`
++ ($plugin.settings.database.value() && !$plugin.settings.dbReload.value() ? `
+            if (args.length >= 2 && "database".equalsIgnoreCase(args[1])) {
+                plugin.options.database().reloadConfig();
+                plugin.options.database().reconnect();
+                return t(sender, "&a已重新连接并配置数据库");
+            }` : ''
+) + `
             plugin.reloadConfig();
             return t(sender, "&a配置文件已重载");
         }
@@ -576,7 +583,7 @@ public class CommandMain extends AbstractModule implements CommandExecutor, TabC
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String alias, @NotNull String[] args) {
         if (args.length == 1) {
             List<String> list = new ArrayList<>();
-            if (sender.isOp()) {
+            if (sender.hasPermission("${reload_permission}")) {
                 list.add("reload");
             }
             return startsWith(args[0], list);

@@ -270,8 +270,12 @@ dependencies {
   + ($depend.resolver.value() ? `
     implementation(base.resolver.lite)` : ''
 ) + `
-}`
-+ ($depend.resolver.value() ? `
+}
+
+configurations.compileOnly.configure {
+    exclude(group="org.jspecify", module="jspecify")
+}
+` + ($depend.resolver.value() ? `
 buildConfig {
     className("BuildConstants")
     packageName("${packageName}")

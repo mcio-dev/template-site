@@ -20,7 +20,7 @@ const versions = {
     // https://github.com/GradleUp/shadow/releases
     shadowJar: '9.3.0',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.7.31',
+    PluginBase: '1.7.33',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
     PlaceholderAPI: '2.12.2',
     // https://modrinth.com/plugin/playerpoints/versions
@@ -63,12 +63,12 @@ const $plugin = {
         actions: $v("#plugin-modules-gui-actions"),
         gui: $v("#plugin-modules-gui-actions"),
         paper: $v("#plugin-modules-paper"),
-        misc: $v("#plugin-modules-misc"),
         l10n: $v("#plugin-modules-l10n"),
         commands: $v("#plugin-modules-commands"),
         temporaryData: $v("#plugin-modules-temporary-data"),
+        magic: $v("#plugin-modules-magic"),
         join: () => {
-            let list = ['library']
+            let list = ['library', 'misc']
             for (let key in $plugin.modules) {
                 if (key == "join") continue
                 if ($plugin.modules[key].value()) {
@@ -256,14 +256,15 @@ dependencies {
     base.library(LibraryHelper.adventure("${versions.adventure.common}"))`
     : `
     LibraryHelper.adventure("${versions.adventure.common}").forEach(::implementation)`) : ''
+) + ($depend.hikariCP.value() ? ($depend.resolver.value() ? `
+    base.library(base.depend.HikariCP)`
+    : `
+    implementation(base.depend.HikariCP) { isTransitive = false }`) : ''
 ) + `
     base.collectPluginHolders()
 ` + ($depend.nbtapi.value() ? (`
     implementation(base.depend.nbtapi)`) : ''
-) + ($depend.hikariCP.value() ? `
-    implementation(base.depend.HikariCP) { isTransitive = false }` : ''
 ) + `
-    implementation("com.github.technicallycoded:FoliaLib:0.4.4") { isTransitive = false }
     for (artifact in pluginBaseModules) {
         implementation("$artifact")
     }`
@@ -426,8 +427,7 @@ import top.mrxiaom.pluginbase.economy.IEconomy;` : ''
 import top.mrxiaom.pluginbase.paper.PaperFactory;` : ''
 ) + `
 import top.mrxiaom.pluginbase.utils.inventory.InventoryFactory;
-import top.mrxiaom.pluginbase.utils.item.ItemEditor;
-import top.mrxiaom.pluginbase.utils.scheduler.FoliaLibScheduler;`
+import top.mrxiaom.pluginbase.utils.item.ItemEditor;`
 + ($depend.resolver.value() ? `
 import top.mrxiaom.pluginbase.utils.ClassLoaderWrapper;
 import top.mrxiaom.pluginbase.utils.ConfigUtils;
@@ -457,7 +457,6 @@ public class ${mainClass} extends BukkitPlugin {
                 .scanIgnore("${$depend.shadowTarget.value()}")` : ''
 ) + `
         );
-        this.scheduler = new FoliaLibScheduler(this);
 ` + ($depend.resolver.value() ? `
         try {
             //noinspection ResultOfMethodCallIgnored

@@ -24,19 +24,19 @@
 					<h2>Step 1. 插件属性</h2>
 					<div class="fields bottom-07em">
 						<div class="field half">
-							<label for="plugin-name">插件名</label>
+							<label class="card-title" for="plugin-name">插件名</label>
 							<input type="text" name="plugin-name" id="plugin-name" value="ExamplePlugin" placeholder="插件名" />
-							<label for="plugin-package">代码包名</label>
+							<label class="card-title" for="plugin-package">代码包名</label>
 							<input type="text" name="plugin-package" id="plugin-package" value="top.mrxiaom.example" placeholder="代码包名" />
-							<label for="plugin-api-version">API 版本</label>
+							<label class="card-title" for="plugin-api-version">API 版本</label>
 							<input type="text" name="plugin-api-version" id="plugin-api-version" value="1.13" placeholder="API 版本" />
 						</div>
 						<div class="field half">
-							<label for="plugin-version">插件版本</label>
+							<label class="card-title" for="plugin-version">插件版本</label>
 							<input type="text" name="plugin-version" id="plugin-version" value="1.0.0" placeholder="插件名" />
-							<label for="plugin-mainclass">主类名</label>
+							<label class="card-title" for="plugin-mainclass">主类名</label>
 							<input type="text" name="plugin-mainclass" id="plugin-mainclass" value="ExamplePlugin" placeholder="主类名" />
-							<label for="plugin-authors">作者列表 (逗号分隔)</label>
+							<label class="card-title" for="plugin-authors">作者列表 (逗号分隔)</label>
 							<input type="text" name="plugin-authors" id="plugin-authors" value="MrXiaoM" placeholder="作者列表" />
 						</div>
 					</div>
@@ -119,7 +119,7 @@
 						</div>
 					</div>
 					<div class="field">
-						<label for="command-description">命令描述</label>
+						<label class="card-title" for="command-description">命令描述</label>
 						<input type="text" name="command-description" id="command-description" value="The main command of ExamplePlugin" placeholder="命令描述" />
 					</div>
 				</section>
@@ -127,29 +127,35 @@
 					<h2>Step 3. 使用依赖</h2>
 					<div class="fields bottom-07em">
 						<div class="field">
-							<label for="depend-minecraft">游戏版本</label>
+							<label class="card-title" for="depend-minecraft">游戏版本</label>
 							<input type="text" name="depend-minecraft" id="depend-minecraft" value="1.20" placeholder="游戏版本" />
+
 							<input type="checkbox" id="depend-paper" name="depend-paper">
 							<label for="depend-paper">使用 Paper API (对 Spigot 兼容性稍差)</label>
-							<label for="depend-shadow-target">shadow 打包目标包</label>
+
+							<label class="card-title" for="depend-shadow-target">shadow 打包目标包</label>
 							<input type="text" name="depend-shadow-target" id="depend-shadow-target" value="top.mrxiaom.example.libs" placeholder="shadow 打包目标包" />
 							
+							<label class="card-title">打包依赖</label>
+							<ul class="air">
+								<li>
+									<input type="checkbox" id="depend-nbtapi" name="depend-nbtapi">
+									<label for="depend-nbtapi">item-nbt-api 全版本NBT支持库</label>
+								</li>
+								<li>
+									<input type="checkbox" id="depend-resolver-lite" name="depend-resolver-lite" checked>
+									<label for="depend-resolver-lite">LibrariesResolver-Lite 依赖处理器</label>
+								</li>
+							</ul>
+							<label class="card-title">引用依赖</label>
 							<ul class="air">
 								<li>
 									<input type="checkbox" id="depend-adventure" name="depend-adventure" checked>
 									<label for="depend-adventure">Adventure 富文本支持库</label>
 								</li>
 								<li>
-									<input type="checkbox" id="depend-nbtapi" name="depend-nbtapi">
-									<label for="depend-nbtapi">item-nbt-api 全版本NBT支持库</label>
-								</li>
-								<li>
 									<input type="checkbox" id="depend-hikaricp" name="depend-hikaricp">
 									<label for="depend-hikaricp">HikariCP 数据库连接池</label>
-								</li>
-								<li>
-									<input type="checkbox" id="depend-resolver-lite" name="depend-resolver-lite" checked>
-									<label for="depend-resolver-lite">LibrariesResolver-Lite 依赖处理器</label>
 								</li>
 							</ul>
 						</div>
@@ -174,7 +180,7 @@
 						</ul>
 						<p>
 							注意: 请在「项目结构」将 SDK 版本设为 <code>Java 17</code>，在「设置」->「构建工具」->「Gradle」将「Gradle JVM」设为 <code>项目SDK</code>。<br>
-							要这么做是因为部分依赖的引用要求 Java 17，别担心，编译后是支持到 Java 8 的。
+							要这么做是因为部分依赖的引用要求 Java 25，别担心，编译后是支持到 Java 8 的。
 						</p>
 				</section>
 			</div>

@@ -20,7 +20,7 @@ const versions = {
     // https://github.com/GradleUp/shadow/releases
     shadowJar: '9.3.0',
     // https://github.com/MrXiaoM/PluginBase/releases
-    PluginBase: '1.7.34',
+    PluginBase: '1.8.0',
     // https://github.com/PlaceholderAPI/PlaceholderAPI/releases
     PlaceholderAPI: '2.12.2',
     // https://modrinth.com/plugin/playerpoints/versions
@@ -68,7 +68,11 @@ const $plugin = {
         temporaryData: $v("#plugin-modules-temporary-data"),
         magic: $v("#plugin-modules-magic"),
         join: () => {
-            let list = ['library', 'misc']
+            let list = ['library']
+            if ($depend.adventure.value()) {
+                list.push('message')
+            }
+            list.push('misc')
             for (let key in $plugin.modules) {
                 if (key == "join") continue
                 if ($plugin.modules[key].value()) {
